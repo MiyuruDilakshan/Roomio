@@ -1,0 +1,320 @@
+/* =========================
+   STEPS SECTION
+========================= */
+
+.steps-section{
+padding-top:96px;
+padding-bottom:192px;
+background:#ffffff;
+}
+
+.steps-container{
+max-width:1232px;
+margin:auto;
+padding:0 24px;
+}
+
+
+/* =========================
+   SECTION HEADER
+========================= */
+
+.steps-header{
+text-align:center;
+margin-bottom:64px;
+}
+
+.steps-header h2{
+font-family:Inter;
+font-weight:700;
+font-size:36px;
+line-height:40px;
+color:#0F172A;
+}
+
+.title-line{
+width:80px;
+height:6px;
+background:#245FEB;
+border-radius:999px;
+margin:8px auto 0 auto;
+}
+
+
+/* =========================
+   STEP ROW LAYOUT
+========================= */
+
+.step-row{
+display:flex;
+align-items:center;
+gap:64px;
+margin-bottom:120px;
+}
+
+.step-left{
+flex:1;
+max-width:584px;
+position:relative;
+padding-left:64px;
+}
+
+.step-image{
+flex:1;
+display:flex;
+justify-content:center;
+}
+
+/* =========================
+   STEP NUMBER BADGE
+========================= */
+
+.step-number{
+position:absolute;
+left:0;
+top:2px;
+
+width:48px;
+height:48px;
+
+background:#245FEB;
+color:#ffffff;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+border-radius:12px;
+
+font-family:Inter;
+font-weight:700;
+font-size:20px;
+
+box-shadow:
+0 4px 6px rgba(36,95,235,0.20),
+0 10px 15px rgba(36,95,235,0.20);
+}
+
+
+/* =========================
+   STEP TITLE
+========================= */
+
+.step-title{
+font-family:Inter;
+font-weight:700;
+font-size:30px;
+line-height:36px;
+color:#0F172A;
+margin-bottom:16px;
+}
+
+
+/* =========================
+   STEP DESCRIPTION
+========================= */
+
+.step-desc{
+font-family:Inter;
+font-weight:400;
+font-size:18px;
+line-height:29px;
+color:#475569;
+margin-bottom:24px;
+}
+
+
+/* =========================
+   FEATURE BOXES (STEP 1)
+========================= */
+
+.feature-row{
+display:flex;
+gap:16px;
+}
+
+.feature-box{
+display:flex;
+flex-direction:column;
+align-items:flex-start;
+gap:10px;
+
+background:#F8FAFC;
+border:1px solid #F1F5F9;
+
+padding:16px;
+border-radius:8px;
+
+width:100%;
+max-width:284px;
+}
+
+.feature-box span{
+font-family:Inter;
+font-weight:600;
+font-size:14px;
+line-height:20px;
+color:#0F172A;
+}
+
+.feature-icon{
+width:20px;
+height:20px;
+color:#245FEB;
+}
+
+
+/* =========================
+   BULLET LIST (STEP 2)
+========================= */
+
+.bullet-list{
+list-style:none;
+padding:0;
+margin-top:20px;
+}
+
+.bullet-list li{
+display:flex;
+align-items:center;
+gap:10px;
+margin-bottom:12px;
+
+font-family:Inter;
+font-size:16px;
+color:#475569;
+}
+
+.bullet-icon{
+width:18px;
+height:18px;
+color:#245FEB;
+}
+
+
+/* =========================
+   STEP LINK (STEP 3)
+========================= */
+
+.step-link{
+font-family:Inter;
+font-weight:600;
+font-size:16px;
+color:#245FEB;
+cursor:pointer;
+text-decoration:none;
+margin-top:8px;
+display:inline-block;
+}
+
+
+/* =========================
+   TAGS (STEP 4)
+========================= */
+
+.tag-row{
+display:flex;
+gap:12px;
+margin-top:16px;
+}
+
+.tag-row span{
+background:#F1F5F9;
+padding:8px 14px;
+border-radius:999px;
+
+font-family:Inter;
+font-size:14px;
+font-weight:500;
+color:#0F172A;
+}
+
+
+/* =========================
+   STEP 5 BUTTONS
+========================= */
+
+.export-buttons{
+display:flex;
+gap:16px;
+margin-top:24px;
+}
+
+.export-btn{
+display:flex;
+align-items:center;
+gap:8px;
+
+padding:10px 16px;
+
+background:#F1F5F9;
+border:none;
+border-radius:8px;
+
+font-family:Inter;
+font-size:14px;
+font-weight:600;
+color:#0F172A;
+
+cursor:pointer;
+transition:all 0.2s ease;
+}
+
+.export-btn:hover{
+background:#E2E8F0;
+}
+
+.export-icon{
+width:18px;
+height:18px;
+color:#245FEB;
+}
+
+
+/* =========================
+   IMAGE
+========================= */
+
+.step-image img{
+width:100%;
+max-width:584px;
+height:584px;
+border-radius:16px;
+
+object-fit:cover;
+
+box-shadow:
+0 8px 10px rgba(0,0,0,0.10),
+0 20px 25px rgba(0,0,0,0.10);
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width:1100px){
+
+.step-row{
+flex-direction:column;
+gap:40px;
+}
+
+.step-image img{
+width:100%;
+height:auto;
+}
+
+.feature-row{
+flex-direction:column;
+}
+
+.feature-box{
+width:100%;
+}
+
+.export-buttons{
+flex-direction:column;
+}
+
+}
