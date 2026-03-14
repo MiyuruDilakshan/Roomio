@@ -17,6 +17,7 @@ const Library = () => {
   const [selectedStyle, setSelectedStyle] = useState('Modern');
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [savedProducts, setSavedProducts] = useState([2]);
 
   const tabs = ['All Items', 'Sofas', 'Tables', 'Chairs', 'Beds', 'Storage', 'Lighting', 'Saved Items'];
   const colors = [
@@ -121,6 +122,14 @@ const Library = () => {
         ))}
       </div>
     );
+  };
+
+  const toggleSave = (productId) => {
+    if (savedProducts.includes(productId)) {
+      setSavedProducts(savedProducts.filter(id => id !== productId));
+    } else {
+      setSavedProducts([...savedProducts, productId]);
+    }
   };
 
   return (
@@ -255,18 +264,20 @@ const Library = () => {
           {/* Main Content Area */}
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* Search & Tabs */}
-            <div className="bg-white border-b border-gray-200 px-8 py-4">
-              {/* Search Bar */}
-              <div className="relative mb-4">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-                <input
-                  type="text"
-                  placeholder="Search furniture, styles, or collections..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+<div className="bg-white border-b border-gray-200 px-8 py-4">
+
+
+  {/* Search Bar */}
+  <div className="relative mb-4">
+    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+    <input
+      type="text"
+      placeholder="Search furniture, styles, or collections..."
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+      className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
+  </div>
 
               {/* Tabs & Sort */}
               <div className="flex items-center justify-between">
@@ -328,12 +339,15 @@ const Library = () => {
                         </div>
                       )}
                       {/* Heart Icon */}
-                      <button className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors">
-                        <Heart
-                          size={18}
-                          className={`${product.saved ? 'fill-red-500 text-red-500' : 'text-gray-600'}`}
-                        />
-                      </button>
+<button 
+  onClick={() => toggleSave(product.id)}
+  className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors"
+>
+  <Heart
+    size={18}
+    className={`${savedProducts.includes(product.id) ? 'fill-red-500 text-red-500' : 'text-gray-600'}`}
+  />
+</button>
                     </div>
 
                     {/* Content */}
