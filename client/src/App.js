@@ -17,6 +17,22 @@ function injectStyles() {
   const s = document.createElement("style");
   s.id = "roomio-transitions";
   s.textContent = `
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import LandingPage from "./pages/LandingPage";
+import Login from "./pages/Login.jsx";
+import Signup from "./pages/Signup.jsx";
+import NotFoundPage from "./pages/NotFoundPage.jsx";
+import Dashboard from "./pages/customer/Dashboard";
+import MyDesigns from "./pages/customer/MyDesigns";
+import Library from "./pages/customer/Library";
+import Inspiration from "./pages/customer/Inspiration";
+import Settings from "./pages/customer/Settings";
+
+function injectStyles() {
+  if (document.getElementById("roomio-transitions")) return;
+  const styleElement = document.createElement("style");
+  styleElement.id = "roomio-transitions";
+  styleElement.textContent = `
     @keyframes page-fade {
       from { opacity: 0; }
       to { opacity: 1; }
@@ -43,8 +59,19 @@ function AppRoutes() {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+     
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/customer" element={<Navigate to="/customer/dashboard" replace />} />
+        <Route path="/customer/dashboard" element={<Dashboard onNavigate={handleNavigate} />} />
+        <Route path="/customer/my-designs" element={<MyDesigns onNavigate={handleNavigate} />} />
+        <Route path="/customer/library" element={<Library onNavigate={handleNavigate} />} />
+        <Route path="/customer/inspiration" element={<Inspiration onNavigate={handleNavigate} />} />
+        <Route path="/customer/settings" element={<Settings onNavigate={handleNavigate} />} />
+
+
+
+
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </div>
