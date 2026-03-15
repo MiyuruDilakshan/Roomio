@@ -152,3 +152,68 @@ exports.getMe = async (req, res) => {
     });
   }
 };
+
+// Update user profile
+exports.updateProfile = async (req, res) => {
+  try {
+    const { name, avatar, currentPassword, newPassword } = req.body;
+    const user = await User.findById(req.user.id).select("+password");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Update name if provided
+    if (name) {
+      user.name = name;
+    }
+
+    // Update avatar if provided
+    if (avatar) {
+      user.avatar = avatar;
+    }
+
+    // Update password if provided
+    if (newPassword) {
+      // Verify current password
+      if (!currentPassword) {
+        return res.status(400).json({
+          success: false,
+          message: "Current password is required to change password",
+        });
+      }
+
+      const isMatch = await user.matchPassword(currentPassword);
+      if (!isMatch) {
+        return res.status(401).json({
+          success: false,
+          message: "Current password is incorrect",
+        });
+      }
+
+      user.password = newPassword;
+    }
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        avatar: user.avatar,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
