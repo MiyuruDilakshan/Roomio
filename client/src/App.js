@@ -1,5 +1,6 @@
 import React, { useEffect, useLayoutEffect } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 // Pages - Public
 import LandingPage from "./pages/LandingPage";
@@ -67,27 +68,28 @@ function AppRoutes() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<TermsOfService />} />
+        <Route path="/terms-of-service" element={<TermsOfService />} />
 
         {/* Auth Routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-
+       
         {/* Customer Routes */}
         <Route path="/customer" element={<Navigate to="/customer/dashboard" replace />} />
-        <Route path="/customer/dashboard" element={<Dashboard />} />
-        <Route path="/customer/my-designs" element={<MyDesigns />} />
-        <Route path="/customer/library" element={<Library />} />
-        <Route path="/customer/inspiration" element={<Inspiration />} />
-        <Route path="/customer/settings" element={<Settings />} />
+        <Route path="/customer/dashboard" element={<ProtectedRoute requiredRole="customer"><Dashboard /></ProtectedRoute>} />
+        <Route path="/customer/my-designs" element={<ProtectedRoute requiredRole="customer"><MyDesigns /></ProtectedRoute>} />
+        <Route path="/customer/library" element={<ProtectedRoute requiredRole="customer"><Library /></ProtectedRoute>} />
+        <Route path="/customer/inspiration" element={<ProtectedRoute requiredRole="customer"><Inspiration /></ProtectedRoute>} />
+        <Route path="/customer/settings" element={<ProtectedRoute requiredRole="customer"><Settings /></ProtectedRoute>} />
 
         {/* Designer Routes */}
         <Route path="/designer" element={<Navigate to="/designer/dashboard" replace />} />
-        <Route path="/designer/dashboard" element={<DesignerDashboard />} />
-        <Route path="/designer/portfolio" element={<DesignerPortfolio />} />
-        <Route path="/designer/library" element={<DesignerLibrary />} />
-        <Route path="/designer/inspiration" element={<DesignerInspiration />} />
-        <Route path="/designer/clients" element={<DesignerClients />} />
-        <Route path="/designer/settings" element={<DesignerSettings />} />
+        <Route path="/designer/dashboard" element={<ProtectedRoute requiredRole="designer"><DesignerDashboard /></ProtectedRoute>} />
+        <Route path="/designer/portfolio" element={<ProtectedRoute requiredRole="designer"><DesignerPortfolio /></ProtectedRoute>} />
+        <Route path="/designer/library" element={<ProtectedRoute requiredRole="designer"><DesignerLibrary /></ProtectedRoute>} />
+        <Route path="/designer/inspiration" element={<ProtectedRoute requiredRole="designer"><DesignerInspiration /></ProtectedRoute>} />
+        <Route path="/designer/clients" element={<ProtectedRoute requiredRole="designer"><DesignerClients /></ProtectedRoute>} />
+        <Route path="/designer/settings" element={<ProtectedRoute requiredRole="designer"><DesignerSettings /></ProtectedRoute>} />
 
         {/* 404 Route */}
         <Route path="*" element={<NotFoundPage />} />
