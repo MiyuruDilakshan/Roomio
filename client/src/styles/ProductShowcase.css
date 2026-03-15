@@ -1,31 +1,34 @@
 .product-showcase{
   width:100%;
   padding:48px 32px;
+  overflow-x:hidden;
 }
 
 /* BLUE CARD */
 
 .showcase-container{
-  max-width:1216px;
+  max-width:1200px;
   margin:auto;
 
   background:linear-gradient(135deg,#2F63E8,#3E78F0);
 
   border-radius:32px;
 
-  padding:48px 56px;
+  padding:48px 40px;
 
   display:flex;
   align-items:center;
   justify-content:space-between;
 
-  gap:56px;
+  gap:40px;
 }
 
 /* LEFT TEXT */
 
 .showcase-left{
-  max-width:504px;
+  flex:1;
+  min-width:0;
+  max-width:500px;
 
   display:flex;
   flex-direction:column;
@@ -90,9 +93,19 @@
 
 /* RIGHT IMAGE */
 
+.showcase-right{
+  flex:1;
+  min-width:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
 .showcase-right img{
-  width:488px;
-  height:274px;
+  width:100%;
+  max-width:450px;
+  height:auto;
+  min-height:250px;
 
   object-fit:cover;
 
@@ -102,4 +115,54 @@
 
   box-shadow:
   0 20px 40px rgba(0,0,0,0.25);
+}
+
+/* RESPONSIVE DESIGN */
+
+@media(max-width:1024px){
+  .showcase-container{
+    flex-direction:column;
+    padding:40px 32px;
+    gap:32px;
+  }
+
+  .showcase-left{
+    max-width:100%;
+  }
+
+  .showcase-left h2{
+    font-size:40px;
+    line-height:1.15;
+  }
+
+  .showcase-right img{
+    max-width:100%;
+    height:auto;
+  }
+}
+
+@media(max-width:768px){
+  .product-showcase{
+    padding:32px 16px;
+  }
+
+  .showcase-container{
+    padding:32px 20px;
+    gap:24px;
+    border-radius:20px;
+  }
+
+  .showcase-left h2{
+    font-size:32px;
+    line-height:1.2;
+  }
+
+  .showcase-desc{
+    font-size:16px;
+    line-height:24px;
+  }
+
+  .feature-list li{
+    font-size:14px;
+  }
 }

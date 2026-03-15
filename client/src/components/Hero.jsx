@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/Hero.css";
 
 import heroImage from "../assets/hero-image.png";
@@ -7,6 +8,22 @@ import avatar2 from "../assets/avatar2.jpg";
 import avatar3 from "../assets/avatar3.jpg";
 
 function Hero() {
+  const navigate = useNavigate();
+
+  const handleStartDesigning = () => {
+    const user = localStorage.getItem("user");
+    if (user) {
+      try {
+        const userData = JSON.parse(user);
+        navigate(userData.role === "designer" ? "/designer/dashboard" : "/customer/dashboard");
+      } catch (e) {
+        navigate("/login");
+      }
+    } else {
+      navigate("/login");
+    }
+  };
+
   useEffect(() => {
     let isTicking = false;
 
@@ -56,7 +73,7 @@ function Hero() {
             technical skills required.
           </p>
 
-          <button className="hero-btn">
+          <button className="hero-btn" onClick={handleStartDesigning}>
             Start Designing Free
           </button>
 

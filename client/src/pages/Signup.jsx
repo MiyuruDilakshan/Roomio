@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 // ─── Body reset ───────────────────────────────────────────────────────────────
 function useBodyReset() {
@@ -90,6 +91,49 @@ export default function Signup() {
   const [email, setEmail]     = useState("");
   const [pw, setPw]           = useState("");
   const [confirm, setConfirm] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    // Validation
+    if (!name || !email || !pw || !confirm) {
+      setError("All fields are required");
+      return;
+    }
+
+    if (pw !== confirm) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    if (pw.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await axios.post("http://localhost:5000/api/auth/register", {
+        name,
+        email,
+        password: pw,
+      });
+
+      if (response.data.success) {
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+        navigate("/customer/dashboard");
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || "Registration failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const avatars = [
     "https://i.pravatar.cc/68?img=47",
@@ -278,11 +322,11 @@ export default function Signup() {
               style={{ width: "15px", height: "15px", accentColor: P, cursor: "pointer", flexShrink: 0, marginTop: "2px" }}/>
             <label htmlFor="agree" style={{ fontSize: "12.5px", color: "#64748b", lineHeight: "1.5" }}>
               I agree to the{" "}
-              <button style={{ background: "none", border: "none", color: P, fontWeight: "600", cursor: "pointer", padding: 0, fontSize: "12.5px", fontFamily: "inherit" }}>
+              <button onClick={() => navigate("/terms-of-service")} style={{ background: "none", border: "none", color: P, fontWeight: "600", cursor: "pointer", padding: 0, fontSize: "12.5px", fontFamily: "inherit" }}>
                 Terms & Conditions
               </button>
               {" "}and{" "}
-              <button style={{ background: "none", border: "none", color: P, fontWeight: "600", cursor: "pointer", padding: 0, fontSize: "12.5px", fontFamily: "inherit" }}>
+              <button onClick={() => navigate("/privacy-policy")} style={{ background: "none", border: "none", color: P, fontWeight: "600", cursor: "pointer", padding: 0, fontSize: "12.5px", fontFamily: "inherit" }}>
                 Privacy Policy
               </button>
             </label>
@@ -290,19 +334,31 @@ export default function Signup() {
 
           {/* CTA */}
           <button
+            onClick={handleSignup}
+            disabled={loading}
             style={{
-              width: "100%", background: `linear-gradient(135deg, ${P} 0%, ${PD} 100%)`,
+              width: "100%", background: loading ? "#b0bec5" : `linear-gradient(135deg, ${P} 0%, ${PD} 100%)`,
               color: "white", border: "none", borderRadius: "10px", padding: "13px",
-              fontSize: "15px", fontWeight: "700", cursor: "pointer",
+              fontSize: "15px", fontWeight: "700", cursor: loading ? "not-allowed" : "pointer",
               display: "flex", alignItems: "center", justifyContent: "center", gap: "9px",
               boxShadow: "0 4px 14px rgba(79,70,229,0.35)",
               transition: "all 0.18s", fontFamily: "inherit", letterSpacing: "-0.1px",
             }}
-            onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 7px 20px rgba(79,70,229,0.45)"; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 14px rgba(79,70,229,0.35)"; }}
+            onMouseEnter={e => { if (!loading) { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 7px 20px rgba(79,70,229,0.45)"; } }}
+            onMouseLeave={e => { if (!loading) { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 14px rgba(79,70,229,0.35)"; } }}
           >
-            Create Account <ArrowIcon/>
+            {loading ? "Creating Account..." : "Create Account"} <ArrowIcon/>
           </button>
+
+          {error && (
+            <div style={{
+              marginTop: "16px", padding: "12px", backgroundColor: "#fee2e2",
+              border: "1px solid #fca5a5", borderRadius: "8px",
+              color: "#991b1b", fontSize: "13px",
+            }}>
+              {error}
+            </div>
+          )}
 
           {/* Trust badge */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", marginTop: "16px" }}>

@@ -1,8 +1,25 @@
 import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/AboutHero.css";
 import heroImage from "../assets/about-hero.png";   // your hero image
 
 function AboutHero() {
+  const navigate = useNavigate();
+
+  const handleGetStarted = () => {
+    const user = localStorage.getItem("user");
+    if (user) {
+      try {
+        const userData = JSON.parse(user);
+        navigate(userData.role === "designer" ? "/designer/dashboard" : "/customer/dashboard");
+      } catch (e) {
+        navigate("/login");
+      }
+    } else {
+      navigate("/login");
+    }
+  };
+
   useEffect(() => {
     let isTicking = false;
 
@@ -51,7 +68,7 @@ function AboutHero() {
            3D visualization.
         </p>
 
-        <button className="about-btn">
+        <button className="about-btn" onClick={handleGetStarted}>
           Get Started
         </button>
 

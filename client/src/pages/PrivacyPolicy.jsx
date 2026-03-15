@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "../styles/PrivacyPolicy.css";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -15,6 +15,39 @@ import {
 } from "lucide-react";
 
 function PrivacyPolicy() {
+  const [activeSection, setActiveSection] = useState("introduction");
+
+  const tocItems = [
+    { id: "introduction", label: "Introduction", icon: Info },
+    { id: "information-collection", label: "Information Collection", icon: Database },
+    { id: "data-usage", label: "Data Usage", icon: BarChart3 },
+    { id: "data-security", label: "Data Security", icon: Shield },
+    { id: "third-party-sharing", label: "Third-Party Sharing", icon: Share2 },
+  ];
+
+  const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+      setActiveSection(sectionId);
+    }
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = tocItems.map(item => document.getElementById(item.id)).filter(Boolean);
+      
+      for (let i = sections.length - 1; i >= 0; i--) {
+        if (sections[i] && sections[i].getBoundingClientRect().top < 200) {
+          setActiveSection(tocItems[i].id);
+          break;
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [tocItems]);
   return (
     <>
       <Navbar />
@@ -33,30 +66,19 @@ function PrivacyPolicy() {
 
               <nav className="toc-links">
 
-                <button className="toc-link active">
-                  <Info size={18} />
-                  Introduction
-                </button>
-
-                <button className="toc-link">
-                  <Database size={18} />
-                  Information Collection
-                </button>
-
-                <button className="toc-link">
-                  <BarChart3 size={18} />
-                  Data Usage
-                </button>
-
-                <button className="toc-link">
-                  <Shield size={18} />
-                  Data Security
-                </button>
-
-                <button className="toc-link">
-                  <Share2 size={18} />
-                  Third-Party Sharing
-                </button>
+                {tocItems.map((item) => {
+                  const IconComponent = item.icon;
+                  return (
+                    <button
+                      key={item.id}
+                      className={`toc-link ${activeSection === item.id ? "active" : ""}`}
+                      onClick={() => scrollToSection(item.id)}
+                    >
+                      <IconComponent size={18} />
+                      {item.label}
+                    </button>
+                  );
+                })}
 
               </nav>
             </div>
@@ -96,7 +118,7 @@ function PrivacyPolicy() {
 
             {/* SECTION 1 */}
 
-            <section className="policy-section">
+            <section className="policy-section" id="introduction">
 
               <h2>1. Introduction</h2>
 
@@ -119,7 +141,7 @@ function PrivacyPolicy() {
 
             {/* SECTION 2 */}
 
-            <section className="policy-section">
+            <section className="policy-section" id="information-collection">
 
               <h2>2. Information Collection</h2>
 
@@ -165,7 +187,7 @@ function PrivacyPolicy() {
 
             {/* SECTION 3 */}
 
-            <section className="policy-section">
+            <section className="policy-section" id="data-usage">
 
               <h2>3. Data Usage</h2>
 
@@ -182,7 +204,7 @@ function PrivacyPolicy() {
 
             {/* SECTION 4 */}
 
-            <section className="policy-section">
+            <section className="policy-section" id="data-security">
 
               <h2>4. Data Security</h2>
 
@@ -217,7 +239,7 @@ function PrivacyPolicy() {
 
             {/* SECTION 5 */}
 
-            <section className="policy-section">
+            <section className="policy-section" id="third-party-sharing">
 
               <h2>5. Third-Party Sharing</h2>
 

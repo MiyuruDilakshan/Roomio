@@ -81,7 +81,11 @@ function DashboardNavbar() {
           <div className="dashboard-avatar">
             <img src="https://i.pravatar.cc/36?img=12" alt="avatar" />
           </div>
-          <button className="dashboard-logout-btn" onClick={() => navigate("/login")}>
+          <button className="dashboard-logout-btn" onClick={() => {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            navigate("/login");
+          }}>
             Logout
           </button>
         </div>

@@ -22,12 +22,12 @@ export default function NotFoundPage() {
 
   const handleDashboard = () => {
     try {
-      const user = JSON.parse(localStorage.getItem("roomio_user") || "null");
+      const user = JSON.parse(localStorage.getItem("user") || "null");
       if (!user) { navigate("/login"); return; }
       if (user.role === "designer" || user.role === "staff") {
-        navigate("/dashboard/designer");
+        navigate("/designer/dashboard");
       } else {
-        navigate("/dashboard/customer");
+        navigate("/customer/dashboard");
       }
     } catch (e) {
       navigate("/login");

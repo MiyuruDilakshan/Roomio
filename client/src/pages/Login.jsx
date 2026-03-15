@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 // ─── Body reset ───────────────────────────────────────────────────────────────
 function useBodyReset() {
@@ -84,6 +85,49 @@ export default function Login() {
   const [keep, setKeep]     = useState(false);
   const [email, setEmail]   = useState("");
   const [pw, setPw]         = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError("");
+    
+    // Prevent admin from logging in as customer
+    if (email === "admin@roomio.com" && tab === "customer") {
+      setError("Admin account can only log in as Designer (Staff). Please select the Designer tab.");
+      return;
+    }
+
+    // Prevent non-admin users from logging in as designer
+    if (tab === "designer" && email !== "admin@roomio.com") {
+      setError("Only admin@roomio.com can log in as a designer.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await axios.post("http://localhost:5000/api/auth/login", {
+        email,
+        password: pw,
+      });
+
+      if (response.data.success) {
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+        
+        if (response.data.user.role === "designer") {
+          navigate("/designer/dashboard");
+        } else {
+          navigate("/customer/dashboard");
+        }
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || "Login failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div style={{
@@ -217,19 +261,44 @@ export default function Login() {
             display: "flex", backgroundColor: "#f1f5f9",
             borderRadius: "9px", padding: "3px", marginBottom: "20px", gap: "2px",
           }}>
-            {[["customer","Customer"],["designer","Designer (Staff)"]].map(([val, label]) => (
-              <button key={val} onClick={() => setTab(val)} style={{
-                flex: 1, padding: "8px 10px", border: "none", borderRadius: "7px",
-                fontSize: "13px", fontWeight: "600", cursor: "pointer", fontFamily: "inherit",
-                backgroundColor: tab === val ? "white" : "transparent",
-                color: tab === val ? P : "#94a3b8",
-                boxShadow: tab === val ? "0 1px 4px rgba(0,0,0,0.08)" : "none",
-                transition: "all 0.18s",
-              }}>
-                {label}
-              </button>
-            ))}
+            {[["customer","Customer"],["designer","Designer (Staff)"]].map(([val, label]) => {
+              const isDisabled = 
+                (val === "designer" && email !== "admin@roomio.com") ||
+                (val === "customer" && email === "admin@roomio.com");
+              
+              return (
+                <button key={val} 
+                  onClick={() => setTab(val)} 
+                  disabled={isDisabled}
+                  style={{
+                    flex: 1, padding: "8px 10px", border: "none", borderRadius: "7px",
+                    fontSize: "13px", fontWeight: "600", cursor: isDisabled ? "not-allowed" : "pointer", 
+                    fontFamily: "inherit",
+                    backgroundColor: tab === val ? "white" : "transparent",
+                    color: isDisabled ? "#b0bec5" : (tab === val ? P : "#94a3b8"),
+                    boxShadow: tab === val ? "0 1px 4px rgba(0,0,0,0.08)" : "none",
+                    transition: "all 0.18s",
+                    opacity: isDisabled ? 0.6 : 1,
+                  }}>
+                  {label}
+                </button>
+              );
+            })}
           </div>
+          {email === "admin@roomio.com" && (
+            <div style={{
+              fontSize: "12px", color: "#94a3b8", marginBottom: "16px", fontStyle: "italic",
+            }}>
+              Admin account: Designer login only.
+            </div>
+          )}
+          {email && email !== "admin@roomio.com" && (
+            <div style={{
+              fontSize: "12px", color: "#94a3b8", marginBottom: "16px", fontStyle: "italic",
+            }}>
+              Designer login is reserved for administrators only.
+            </div>
+          )}
 
           {/* Email */}
           <div style={{ marginBottom: "14px" }}>
@@ -268,27 +337,43 @@ export default function Login() {
 
           {/* CTA */}
           <button
+            onClick={handleLogin}
+            disabled={loading}
             style={{
-              width: "100%", background: `linear-gradient(135deg, ${P} 0%, ${PD} 100%)`,
+              width: "100%", background: loading ? "#b0bec5" : `linear-gradient(135deg, ${P} 0%, ${PD} 100%)`,
               color: "white", border: "none", borderRadius: "10px", padding: "13px",
-              fontSize: "15px", fontWeight: "700", cursor: "pointer",
+              fontSize: "15px", fontWeight: "700", cursor: loading ? "not-allowed" : "pointer",
               display: "flex", alignItems: "center", justifyContent: "center", gap: "9px",
               boxShadow: "0 4px 14px rgba(79,70,229,0.35)",
               transition: "all 0.18s", fontFamily: "inherit", letterSpacing: "-0.1px",
             }}
-            onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 7px 20px rgba(79,70,229,0.45)"; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 14px rgba(79,70,229,0.35)"; }}
+            onMouseEnter={e => { if (!loading) { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 7px 20px rgba(79,70,229,0.45)"; } }}
+            onMouseLeave={e => { if (!loading) { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 14px rgba(79,70,229,0.35)"; } }}
           >
-            Sign In <ArrowIcon/>
+            {loading ? "Signing in..." : "Sign In"} <ArrowIcon/>
           </button>
+
+          {error && (
+            <div style={{
+              marginTop: "16px", padding: "12px", backgroundColor: "#fee2e2",
+              border: "1px solid #fca5a5", borderRadius: "8px",
+              color: "#991b1b", fontSize: "13px",
+            }}>
+              {error}
+            </div>
+          )}
 
           {/* Footer */}
           <div style={{ display: "flex", justifyContent: "center", gap: "20px", marginTop: "24px" }}>
-            {["Terms of Service", "Privacy Policy", "Help Center"].map(l => (
-              <button key={l} style={{ background: "none", border: "none", color: "#b0bec5", fontSize: "12px", cursor: "pointer", padding: 0, fontFamily: "inherit" }}>
-                {l}
-              </button>
-            ))}
+            <button onClick={() => navigate("/terms-of-service")} style={{ background: "none", border: "none", color: "#b0bec5", fontSize: "12px", cursor: "pointer", padding: 0, fontFamily: "inherit" }}>
+              Terms of Service
+            </button>
+            <button onClick={() => navigate("/privacy-policy")} style={{ background: "none", border: "none", color: "#b0bec5", fontSize: "12px", cursor: "pointer", padding: 0, fontFamily: "inherit" }}>
+              Privacy Policy
+            </button>
+            <button style={{ background: "none", border: "none", color: "#b0bec5", fontSize: "12px", cursor: "pointer", padding: 0, fontFamily: "inherit" }}>
+              Help Center
+            </button>
           </div>
         </div>
       </div>

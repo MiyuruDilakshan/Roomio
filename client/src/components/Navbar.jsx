@@ -1,13 +1,25 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import "../styles/Navbar.css";
 const logoSrc = "/Logo 1.png";
 
 function Navbar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const lastScrollY = useRef(0);
   const [isHidden, setIsHidden] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [user, setUser] = useState(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      setUser(JSON.parse(userData));
+    } else {
+      setUser(null);
+    }
+  }, [location]);
 
   const isActive = (path) => {
     return location.pathname === path ? "active" : "";
@@ -27,6 +39,14 @@ function Navbar() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setUser(null);
+    setIsDropdownOpen(false);
+    navigate("/");
+  };
 
   return (
     <header className={`navbar${isHidden ? " navbar--hidden" : ""}${isScrolled ? " navbar--scrolled" : ""}`}>
@@ -56,10 +76,116 @@ function Navbar() {
 
         {/* Right Side */}
         <div className="nav-actions">
-          <Link to="/login" className="login">Login</Link>
-          <Link to="/signup">
-            <button className="get-started">Get Started</button>
-          </Link>
+          {user ? (
+            <div style={{ display: "flex", alignItems: "center", gap: "12px", position: "relative" }}>
+              <button
+                onClick={() => navigate(user.role === "designer" ? "/designer/dashboard" : "/customer/dashboard")}
+                style={{
+                  background: "#4f46e5",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "8px",
+                  padding: "8px 16px",
+                  fontSize: "13px",
+                  fontWeight: "600",
+                  cursor: "pointer",
+                  fontFamily: "inherit",
+                }}
+              >
+                Go to Dashboard
+              </button>
+              <button
+                onClick={() => navigate(user.role === "designer" ? "/designer/dashboard" : "/customer/my-designs")}
+                style={{
+                  background: "transparent",
+                  color: "#4f46e5",
+                  border: "1.5px solid #c7d2fe",
+                  borderRadius: "8px",
+                  padding: "7px 14px",
+                  fontSize: "13px",
+                  fontWeight: "600",
+                  cursor: "pointer",
+                  fontFamily: "inherit",
+                }}
+              >
+                Create Design
+              </button>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <img 
+                  src={user.avatar || "https://i.pravatar.cc/68?img=1"} 
+                  alt={user.name} 
+                  style={{ width: "32px", height: "32px", borderRadius: "50%", objectFit: "cover" }}
+                />
+                <span style={{ color: "#0f172a", fontSize: "14px", fontWeight: "500" }}>
+                  {user.name}
+                </span>
+              </div>
+              <button
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  color: "#64748b",
+                  fontSize: "18px",
+                  padding: "4px 8px",
+                }}
+              >
+                ▼
+              </button>
+              {isDropdownOpen && (
+                <div style={{
+                  position: "absolute",
+                  top: "100%",
+                  right: 0,
+                  backgroundColor: "white",
+                  borderRadius: "8px",
+                  border: "1px solid #e2e8f0",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                  minWidth: "160px",
+                  zIndex: 1000,
+                  marginTop: "8px",
+                }}>
+                  <Link to={user.role === "designer" ? "/designer/settings" : "/customer/settings"}
+                    style={{
+                      display: "block",
+                      padding: "10px 16px",
+                      color: "#0f172a",
+                      textDecoration: "none",
+                      borderBottom: "1px solid #e2e8f0",
+                      fontSize: "14px",
+                    }}
+                    onClick={() => setIsDropdownOpen(false)}
+                  >
+                    Settings
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    style={{
+                      width: "100%",
+                      padding: "10px 16px",
+                      background: "none",
+                      border: "none",
+                      color: "#ef4444",
+                      fontSize: "14px",
+                      cursor: "pointer",
+                      textAlign: "left",
+                      fontFamily: "inherit",
+                    }}
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <>
+              <Link to="/login" className="login">Login</Link>
+              <Link to="/signup">
+                <button className="get-started">Get Started</button>
+              </Link>
+            </>
+          )}
         </div>
 
       </div>

@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "../styles/HowItWorks.css";
@@ -8,6 +9,22 @@ import CallToAction from "../components/CallToAction";
 import heroImage from "../assets/hero-image2.png";
 
 function HowItWorks() {
+  const navigate = useNavigate();
+
+  const handleStartDesigning = () => {
+    const user = localStorage.getItem("user");
+    if (user) {
+      try {
+        const userData = JSON.parse(user);
+        navigate(userData.role === "designer" ? "/designer/dashboard" : "/customer/dashboard");
+      } catch (e) {
+        navigate("/login");
+      }
+    } else {
+      navigate("/login");
+    }
+  };
+
   useEffect(() => {
     const elements = Array.from(document.querySelectorAll("[data-reveal]"));
     if (elements.length === 0) return;
@@ -78,7 +95,7 @@ function HowItWorks() {
             <div className="hero-buttons">
 
               {/* Primary Button */}
-              <button className="primary-btn">
+              <button className="primary-btn" onClick={handleStartDesigning}>
                 Start Designing Now
               </button>
 
