@@ -13,12 +13,34 @@ function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (userData) {
-      setUser(JSON.parse(userData));
-    } else {
-      setUser(null);
-    }
+    const syncUser = () => {
+      const userData = localStorage.getItem("user");
+      if (userData) {
+        setUser(JSON.parse(userData));
+      } else {
+        setUser(null);
+      }
+    };
+
+    syncUser();
+
+    const handleProfileUpdate = () => {
+      syncUser();
+    };
+
+    const handleStorage = (event) => {
+      if (!event.key || event.key === "user") {
+        syncUser();
+      }
+    };
+
+    window.addEventListener("profileUpdated", handleProfileUpdate);
+    window.addEventListener("storage", handleStorage);
+
+    return () => {
+      window.removeEventListener("profileUpdated", handleProfileUpdate);
+      window.removeEventListener("storage", handleStorage);
+    };
   }, [location]);
 
   const isActive = (path) => {

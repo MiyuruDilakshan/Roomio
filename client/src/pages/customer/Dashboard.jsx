@@ -1,4 +1,5 @@
 
+import { useEffect, useState } from "react";
 import LoggedInNavbar from "../../components/LoggedInNavbar";
 import CustomerSidebar from "../../components/CustomerSidebar";
 import "../../styles/customer/Dashboard.css";
@@ -22,6 +23,20 @@ const recentDesigns = [
 ];
 
 export default function Dashboard() {
+  const [userName, setUserName] = useState("User");
+
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    if (user) {
+      try {
+        const userData = JSON.parse(user);
+        const firstName = userData.name ? userData.name.split(" ")[0] : "User";
+        setUserName(firstName);
+      } catch (e) {
+        setUserName("User");
+      }
+    }
+  }, []);
 
   return (
     <>
@@ -35,7 +50,7 @@ export default function Dashboard() {
           <main className="content">
             <div className="content-header">
               <div>
-                <h1 className="greeting">Hello, Alex!</h1>
+                <h1 className="greeting">Hello, {userName}!</h1>
                 <p className="subgreeting">Welcome back to your workspace. What are we designing today?</p>
               </div>
               <button className="create-btn">＋ Create New Design</button>

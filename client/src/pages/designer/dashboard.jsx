@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import LoggedInNavbar from '../../components/LoggedInNavbar';
 import DesignerSidebar from '../../components/DesignerSidebar';
 import { Plus, Grid3x3, Users, DollarSign, Clock, MoreVertical, Upload, Sparkles } from 'lucide-react';
@@ -6,6 +6,20 @@ import { Plus, Grid3x3, Users, DollarSign, Clock, MoreVertical, Upload, Sparkles
 import '../../styles/designer/Dashboard.css';
 
 const Dashboard = () => {
+  const [userName, setUserName] = useState("Designer");
+
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    if (user) {
+      try {
+        const userData = JSON.parse(user);
+        setUserName(userData.name || "Designer");
+      } catch (e) {
+        setUserName("Designer");
+      }
+    }
+  }, []);
+
   const stats = [
     {
       icon: Grid3x3,
@@ -83,7 +97,7 @@ const Dashboard = () => {
         <div className="des-frame">
           <div className="des-layout">
             <main className="des-content">
-              
+
               {/* Main Content Area */}
               <div className="flex-1 overflow-y-auto">
                 <div className="max-w-7xl mx-auto px-8 py-8">
@@ -92,7 +106,7 @@ const Dashboard = () => {
                   <div className="flex items-start justify-between mb-8">
                     <div>
                       <h1 className="text-3xl font-bold text-gray-900 mb-2">Manage Dashboard</h1>
-                      <p className="text-gray-600">Welcome back, Alex Johnston. Ready for today's customers?</p>
+                      <p className="text-gray-600">Welcome back, {userName}. Ready for today's customers?</p>
                     </div>
                     <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-medium text-sm flex items-center gap-2 transition-colors">
                       <Plus size={18} />

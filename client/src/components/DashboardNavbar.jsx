@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "../styles/DashboardNavbar.css";
 import logoIcon from "../assets/Icon.png";
@@ -7,14 +7,52 @@ function DashboardNavbar() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const [user, setUser] = useState(() => {
+    const stored = localStorage.getItem("user");
+    return stored ? JSON.parse(stored) : null;
+  });
+
   const isActive = (path) => {
     return location.pathname === path ? "active" : "";
+  };
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setUser(null);
+    navigate("/login");
   };
 
   // Extract base path to determine active section
   const currentPath = location.pathname;
   const isCustomerDashboard = currentPath.startsWith("/customer/");
   const isDesignerDashboard = currentPath.startsWith("/designer/");
+
+  useEffect(() => {
+    const syncUser = () => {
+      const stored = localStorage.getItem("user");
+      if (stored) {
+        setUser(JSON.parse(stored));
+      } else {
+        setUser(null);
+      }
+    };
+
+    const handleStorage = (event) => {
+      if (!event.key || event.key === "user") {
+        syncUser();
+      }
+    };
+
+    syncUser();
+    window.addEventListener("profileUpdated", syncUser);
+    window.addEventListener("storage", handleStorage);
+
+    return () => {
+      window.removeEventListener("profileUpdated", syncUser);
+      window.removeEventListener("storage", handleStorage);
+    };
+  }, []);
 
   return (
     <header className="dashboard-navbar">
@@ -79,13 +117,12 @@ function DashboardNavbar() {
         <div className="dashboard-nav-actions">
           <div className="dashboard-icon-btn">🔔</div>
           <div className="dashboard-avatar">
-            <img src="https://i.pravatar.cc/36?img=12" alt="avatar" />
+            <img
+              src={user?.avatar || "https://i.pravatar.cc/36?img=12"}
+              alt={user?.name || "avatar"}
+            />
           </div>
-          <button className="dashboard-logout-btn" onClick={() => {
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
-            navigate("/login");
-          }}>
+          <button className="dashboard-logout-btn" onClick={logout}>
             Logout
           </button>
         </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import "../styles/PrivacyPolicy.css";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -17,13 +17,13 @@ import {
 function PrivacyPolicy() {
   const [activeSection, setActiveSection] = useState("introduction");
 
-  const tocItems = [
+  const tocItems = useMemo(() => [
     { id: "introduction", label: "Introduction", icon: Info },
     { id: "information-collection", label: "Information Collection", icon: Database },
     { id: "data-usage", label: "Data Usage", icon: BarChart3 },
     { id: "data-security", label: "Data Security", icon: Shield },
     { id: "third-party-sharing", label: "Third-Party Sharing", icon: Share2 },
-  ];
+  ], []);
 
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);

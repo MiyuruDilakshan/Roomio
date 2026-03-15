@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import profileImage from '../../assets/alexj.jpg';
+import React, { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
 import pencilButton from '../../assets/pencilButton.png';
-import { Bell, MapPin, CheckCircle, CreditCard } from 'lucide-react';
+import { Bell, CheckCircle, CreditCard } from 'lucide-react';
 import Sidebar from '../../components/DesignerSidebar';
 import LoggedInNavbar from '../../components/LoggedInNavbar';
 
@@ -13,16 +13,60 @@ const Settings = () => {
   });
 
   const [formData, setFormData] = useState({
-    fullName: 'Alex Johnson',
-    email: 'alex.j@roomio.com',
-    role: 'Interior Designer-Staff'
+    fullName: '',
+    email: '',
+    avatar: 'https://i.pravatar.cc/90?img=1'
   });
 
+  const avatarInputRef = useRef(null);
+  const [avatarTouched, setAvatarTouched] = useState(false);
+
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState(''); // 'success' or 'error'
+
+  // Fetch user data on mount
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://localhost:5000/api/auth/me', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.data.success) {
+          const user = response.data.user;
+          setFormData({
+            fullName: user.name || '',
+            email: user.email || '',
+            avatar: user.avatar || 'https://i.pravatar.cc/90?img=1'
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    // Load notifications from localStorage
+    const savedNotifications = localStorage.getItem('designerNotifications');
+    if (savedNotifications) {
+      setNotifications(JSON.parse(savedNotifications));
+    }
+
+    fetchUserData();
+  }, []);
+
   const toggleNotification = (key) => {
-    setNotifications({
-      ...notifications,
-      [key]: !notifications[key]
-    });
+    setNotifications((prev) => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
   };
 
   const handleInputChange = (e) => {
@@ -32,22 +76,151 @@ const Settings = () => {
     });
   };
 
-  const handleSave = () => {
-    console.log('Settings saved:', formData, notifications);
-    alert('Settings saved successfully!');
+  const handlePasswordChange = (e) => {
+    setPasswordData({
+      ...passwordData,
+      [e.target.name]: e.target.value
+    });
   };
 
-  const handleDiscard = () => {
-    setFormData({
-      fullName: 'Alex Johnson',
-      email: 'alex.j@roomio.com',
-      role: 'Interior Designer-Staff'
+  const handleAvatarUpload = () => {
+    avatarInputRef.current?.click();
+  };
+
+  const handleAvatarFileChange = (event) => {
+    const input = event.target;
+    const file = input.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setFormData((prev) => ({ ...prev, avatar: reader.result }));
+      input.value = '';
+    };
+    reader.readAsDataURL(file);
+    setAvatarTouched(true);
+  };
+
+  const handleSave = async () => {
+    try {
+      setLoading(true);
+      setMessage('');
+
+      // Validate passwords if changing password
+      if (passwordData.newPassword) {
+        if (!passwordData.currentPassword) {
+          setMessageType('error');
+          setMessage('Current password is required to change password');
+          setLoading(false);
+          return;
+        }
+        if (passwordData.newPassword !== passwordData.confirmPassword) {
+          setMessageType('error');
+          setMessage('New passwords do not match');
+          setLoading(false);
+          return;
+        }
+        if (passwordData.newPassword.length < 6) {
+          setMessageType('error');
+          setMessage('Password must be at least 6 characters');
+          setLoading(false);
+          return;
+        }
+      }
+
+      const token = localStorage.getItem('token');
+      const response = await axios.put(
+        'http://localhost:5000/api/auth/profile',
+        {
+          name: formData.fullName,
+          avatar: formData.avatar,
+          ...(passwordData.newPassword && {
+            currentPassword: passwordData.currentPassword,
+            newPassword: passwordData.newPassword
+          }),
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (response.data.success) {
+        const updatedUser =
+          response.data.user || JSON.parse(localStorage.getItem('user') || '{}');
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        setFormData({
+          fullName: updatedUser.name || '',
+          email: updatedUser.email || '',
+          avatar: updatedUser.avatar || 'https://i.pravatar.cc/90?img=1'
+        });
+
+        // Save notifications to localStorage
+        localStorage.setItem('designerNotifications', JSON.stringify(notifications));
+
+        const successParts = [];
+        if (avatarTouched) successParts.push('Profile picture updated');
+        if (passwordData.newPassword) successParts.push('Password changed');
+        const successMessage = successParts.length
+          ? successParts.join(' and ')
+          : 'Profile updated successfully!';
+
+        // Clear password fields
+        setPasswordData({
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        });
+
+        setMessageType('success');
+        setMessage(successMessage);
+        setTimeout(() => setMessage(''), 3000);
+        setAvatarTouched(false);
+        if (avatarInputRef.current) {
+          avatarInputRef.current.value = '';
+        }
+
+        window.dispatchEvent(new CustomEvent('profileUpdated', { detail: updatedUser }));
+      }
+    } catch (error) {
+      setMessageType('error');
+      setMessage(error.response?.data?.message || 'Error saving settings');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDiscard = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get('http://localhost:5000/api/auth/me', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.data.success) {
+        const user = response.data.user;
+        setFormData({
+          fullName: user.name || '',
+          email: user.email || '',
+          avatar: user.avatar || 'https://i.pravatar.cc/90?img=1'
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+
+    setPasswordData({
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: ''
     });
-    setNotifications({
-      projectUpdates: true,
-      assetReleases: true,
-      marketplaceSales: false
-    });
+    setMessage('');
+    const savedNotificationsDiscard = localStorage.getItem('designerNotifications');
+    if (savedNotificationsDiscard) {
+      setNotifications(JSON.parse(savedNotificationsDiscard));
+    }
+    if (avatarInputRef.current) {
+      avatarInputRef.current.value = '';
+    }
+    setAvatarTouched(false);
   };
 
   return (
@@ -65,22 +238,45 @@ const Settings = () => {
               <p className="text-gray-600">Manage your profile information and how you interact with the platform.</p>
             </div>
 
+            {/* Success/Error Message */}
+            {message && (
+              <div
+                style={{
+                  padding: "12px 16px",
+                  borderRadius: "8px",
+                  marginBottom: "16px",
+                  backgroundColor: messageType === "success" ? "#d1fae5" : "#fee2e2",
+                  color: messageType === "success" ? "#065f46" : "#991b1b",
+                  border: `1px solid ${messageType === "success" ? "#6ee7b7" : "#fca5a5"}`,
+                }}
+              >
+                {message}
+              </div>
+            )}
+
             {/* Profile Card */}
             <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
               <div className="flex items-start gap-6">
                 {/* Avatar */}
                 <div className="relative">
                   <img
-                    src={profileImage}
-                    alt="alexj"
+                    src={formData.avatar}
+                    alt="profile"
                     className="w-24 h-24 rounded-lg border-4 border-white shadow-lg"
                   />
-                  <div className="absolute -bottom-6 -right-4 cursor-pointer">
-                    <img
-                      src={pencilButton}
-                      alt="Edit"
-                      className="w-10 h-10"
-                    />
+                  <div className="absolute -bottom-6 -right-4">
+                    <button
+                      type="button"
+                      onClick={handleAvatarUpload}
+                      className="cursor-pointer"
+                      aria-label="Change profile photo"
+                    >
+                      <img
+                        src={pencilButton}
+                        alt="Edit"
+                        className="w-10 h-10"
+                      />
+                    </button>
                   </div>
                 </div>
 
@@ -88,27 +284,35 @@ const Settings = () => {
                 <div className="flex-1">
                   <div className="flex items-start justify-between mb-2">
                     <div>
-                      <h2 className="text-xl font-bold text-gray-900">Alex Johnson</h2>
-                      <p className="text-sm text-gray-600">Senior Interior Designer</p>
+                      <h2 className="text-xl font-bold text-gray-900">{formData.fullName}</h2>
+                      <p className="text-sm text-gray-600">Verified Designer</p>
                     </div>
-                    <button className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium transition-colors">
+                    <button
+                      type="button"
+                      onClick={handleAvatarUpload}
+                      className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium transition-colors"
+                    >
                       Change Photo
                     </button>
                   </div>
 
                   <div className="flex items-center gap-4 mt-3">
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <MapPin size={16} className="text-gray-400" />
-                      <span>New York, USA</span>
-                    </div>
                     <div className="flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 rounded-md">
                       <CheckCircle size={14} className="text-blue-600" />
-                      <span className="text-xs font-semibold text-blue-600">Verified Pro</span>
+                      <span className="text-xs font-semibold text-blue-600">Active Member</span>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+
+            <input
+              type="file"
+              accept="image/*"
+              ref={avatarInputRef}
+              onChange={handleAvatarFileChange}
+              style={{ display: 'none' }}
+            />
 
             {/* Two Column Layout */}
             <div className="grid grid-cols-2 gap-6 mb-6">
@@ -145,26 +349,66 @@ const Settings = () => {
                       type="email"
                       name="email"
                       value={formData.email}
-                      onChange={handleInputChange}
+                      disabled
+                      style={{ backgroundColor: "#f3f4f6", cursor: "not-allowed" }}
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Change Password */}
+              <div className="bg-white rounded-xl border border-gray-200 p-6">
+                <div className="flex items-center gap-2 mb-6">
+                  <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+                    <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900">Change Password</h3>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                      Current Password
+                    </label>
+                    <input
+                      type="password"
+                      name="currentPassword"
+                      value={passwordData.currentPassword}
+                      onChange={handlePasswordChange}
+                      placeholder="Enter current password"
                       className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
 
                   <div>
                     <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-                      Professional Role
+                      New Password
                     </label>
-                    <select
-                      name="role"
-                      value={formData.role}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
-                    >
-                      <option>Interior Designer-Staff</option>
-                      <option>Senior Designer</option>
-                      <option>Junior Designer</option>
-                      <option>Project Manager</option>
-                    </select>
+                    <input
+                      type="password"
+                      name="newPassword"
+                      value={passwordData.newPassword}
+                      onChange={handlePasswordChange}
+                      placeholder="Enter new password"
+                      className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                      Confirm Password
+                    </label>
+                    <input
+                      type="password"
+                      name="confirmPassword"
+                      value={passwordData.confirmPassword}
+                      onChange={handlePasswordChange}
+                      placeholder="Confirm new password"
+                      className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
                   </div>
                 </div>
               </div>
@@ -283,15 +527,17 @@ const Settings = () => {
             <div className="flex items-center justify-end gap-3">
               <button
                 onClick={handleDiscard}
-                className="px-6 py-2.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg text-sm font-medium transition-colors"
+                disabled={loading}
+                className="px-6 py-2.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Discard Changes
               </button>
               <button
                 onClick={handleSave}
-                className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
+                disabled={loading}
+                className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Save All Settings
+                {loading ? "Saving..." : "Save All Settings"}
               </button>
             </div>
           </div>
