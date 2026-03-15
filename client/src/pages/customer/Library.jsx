@@ -1,6 +1,7 @@
 import { useState } from "react";
+import LoggedInNavbar from "../../components/LoggedInNavbar";
+import CustomerSidebar from "../../components/CustomerSidebar";
 import "../../styles/customer/Library.css";
-import logoImage from "../../assets/Logo.png";
 import nordicSofaImg from "../../assets/Library/nordic-sofa.png";
 import scandiTableImg from "../../assets/Library/scandi-table.png";
 import industrialChairImg from "../../assets/Library/industrial-chair.png";
@@ -92,8 +93,9 @@ function StarRating({ rating }) {
   );
 }
 
-export default function Library({ onNavigate }) {
-  const [activeNav, setActiveNav] = useState("Library");
+export default function Library() {
+
+
   const [activeCategory, setActiveCategory] = useState("All Items");
   const [savedItems, setSavedItems] = useState({ 2: true });
   const [selectedColors, setSelectedColors] = useState([4]);
@@ -101,13 +103,6 @@ export default function Library({ onNavigate }) {
   const [selectedStyle, setSelectedStyle] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState("Most Popular");
-
-  const navItems = [
-    { label: "Dashboard", icon: "⊞" },
-    { label: "My Designs", icon: "✏️" },
-    { label: "Library", icon: "🪑" },
-    { label: "Inspiration", icon: "💡" },
-  ];
 
   const toggleSave = (id) => {
     setSavedItems((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -125,65 +120,14 @@ export default function Library({ onNavigate }) {
     );
   };
 
-  const handleNavClick = (label) => {
-    setActiveNav(label);
-    if (onNavigate) {
-      if (label === "Dashboard") onNavigate("dashboard");
-      if (label === "My Designs") onNavigate("MyDesigns");
-      if (label === "Inspiration") onNavigate("Inspiration");
-    }
-  };
-
   return (
-    <div className="lib-wrapper">
+    <>
+      <LoggedInNavbar userRole="customer" />
+      <div className="lib-wrapper">
+      <CustomerSidebar />
       <div className="lib-frame">
 
-        {/* Top Navbar */}
-        <nav className="lib-topnav">
-          <div className="lib-topnav-left">
-            <div className="lib-logo">
-              <img src={logoImage} alt="Roomio logo" className="lib-logo-icon" />
-              <span className="lib-logo-text">Roomio</span>
-            </div>
-          </div>
-          <div className="lib-topnav-right">
-            <a href="#" className="lib-nav-link" onClick={() => handleNavClick("Dashboard")}>Dashboard</a>
-            <a href="#" className="lib-nav-link" onClick={() => handleNavClick("My Designs")}>My Designs</a>
-            <a href="#" className="lib-nav-link active">Library</a>
-            <div className="lib-icon-btn">🔔</div>
-            <div className="lib-icon-btn">⚙️</div>
-            <div className="lib-avatar">
-              <img src="https://i.pravatar.cc/36?img=12" alt="avatar" />
-            </div>
-          </div>
-        </nav>
-
         <div className="lib-layout">
-
-          {/* Sidebar */}
-          <aside className="lib-sidebar">
-            <div className="lib-sidebar-label">MAIN MENU</div>
-            <ul className="lib-sidebar-nav">
-              {navItems.map((item) => (
-                <li
-                  key={item.label}
-                  className={`lib-sidebar-item ${activeNav === item.label ? "lib-sidebar-item--active" : ""}`}
-                  onClick={() => handleNavClick(item.label)}
-                >
-                  <span className="lib-sidebar-icon">{item.icon}</span>
-                  {item.label}
-                </li>
-              ))}
-            </ul>
-
-            <div className="lib-sidebar-label" style={{ marginTop: "24px" }}>ACCOUNT</div>
-            <ul className="lib-sidebar-nav">
-              <li className="lib-sidebar-item" onClick={() => onNavigate("Settings")}><span className="lib-sidebar-icon">⚙️</span> Settings</li>
-              <li className="lib-sidebar-item"><span className="lib-sidebar-icon">❓</span> Support</li>
-            </ul>
-
-            <button className="lib-logout-btn">Log Out</button>
-          </aside>
 
           {/* Main Content */}
           <main className="lib-content">
@@ -330,11 +274,15 @@ export default function Library({ onNavigate }) {
                   </div>
                 </div>
               </div>
-
             </div>
-          </main>
+            </main>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
+
+
+
+

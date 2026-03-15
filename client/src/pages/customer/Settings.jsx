@@ -1,9 +1,11 @@
 import { useState } from "react";
+import LoggedInNavbar from "../../components/LoggedInNavbar";
+import CustomerSidebar from "../../components/CustomerSidebar";
 import "../../styles/customer/Settings.css";
-import logoImage from "../../assets/Logo.png";
 
-export default function Settings({ onNavigate }) {
-  const [activeNav, setActiveNav] = useState("Settings");
+export default function Settings() {
+
+
   const [fullName, setFullName] = useState("Alex Johnson");
   const [email, setEmail] = useState("alex.j@roomio.com");
   const [role, setRole] = useState("Interior Designer");
@@ -13,88 +15,18 @@ export default function Settings({ onNavigate }) {
     marketplaceSales: false,
   });
 
-  const navItems = [
-    { label: "Dashboard", icon: "⊞" },
-    { label: "My Designs", icon: "✏️" },
-    { label: "Library", icon: "🪑" },
-    { label: "Inspiration", icon: "💡" },
-  ];
-
-  const handleNavClick = (label) => {
-    setActiveNav(label);
-    if (onNavigate) {
-      if (label === "Dashboard") onNavigate("dashboard");
-      if (label === "My Designs") onNavigate("MyDesigns");
-      if (label === "Library") onNavigate("Library");
-      if (label === "Inspiration") onNavigate("Inspiration");
-    }
-  };
-
   const toggleNotification = (key) => {
     setNotifications((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
   return (
-    <div className="set-wrapper">
+    <>
+      <LoggedInNavbar userRole="customer" />
+      <div className="set-wrapper">
+      <CustomerSidebar />
       <div className="set-frame">
 
-        {/* Top Navbar */}
-        <nav className="set-topnav">
-          <div className="set-topnav-left">
-            <div className="set-logo">
-              <img src={logoImage} alt="Roomio logo" className="set-logo-icon" />
-              <span className="set-logo-text">Roomio</span>
-            </div>
-            <div className="set-search-bar">
-              <span className="set-search-icon">🔍</span>
-              <input type="text" placeholder="Search projects..." />
-            </div>
-          </div>
-          <div className="set-topnav-right">
-            <a href="#" className="set-nav-link" onClick={() => handleNavClick("Dashboard")}>Dashboard</a>
-            <a href="#" className="set-nav-link" onClick={() => handleNavClick("My Designs")}>My Designs</a>
-            <a href="#" className="set-nav-link" onClick={() => handleNavClick("Library")}>Library</a>
-            <div className="set-icon-btn">🔔</div>
-            <div className="set-icon-btn set-icon-btn--active">⚙️</div>
-            <div className="set-avatar">
-              <img src="https://i.pravatar.cc/36?img=12" alt="avatar" />
-            </div>
-          </div>
-        </nav>
-
         <div className="set-layout">
-
-          {/* Sidebar */}
-          <aside className="set-sidebar">
-            <div className="set-sidebar-label">MAIN MENU</div>
-            <ul className="set-sidebar-nav">
-              {navItems.map((item) => (
-                <li
-                  key={item.label}
-                  className={`set-sidebar-item ${activeNav === item.label ? "set-sidebar-item--active" : ""}`}
-                  onClick={() => handleNavClick(item.label)}
-                >
-                  <span className="set-sidebar-icon">{item.icon}</span>
-                  {item.label}
-                </li>
-              ))}
-            </ul>
-
-            <div className="set-sidebar-label" style={{ marginTop: "24px" }}>ACCOUNT</div>
-            <ul className="set-sidebar-nav">
-              <li
-                className={`set-sidebar-item ${activeNav === "Settings" ? "set-sidebar-item--active" : ""}`}
-                onClick={() => setActiveNav("Settings")}
-              >
-                <span className="set-sidebar-icon">⚙️</span> Settings
-              </li>
-              <li className="set-sidebar-item">
-                <span className="set-sidebar-icon">❓</span> Support
-              </li>
-            </ul>
-
-            <button className="set-logout-btn">Log Out</button>
-          </aside>
 
           {/* Main Content */}
           <main className="set-content">
@@ -238,7 +170,7 @@ export default function Settings({ onNavigate }) {
                 <span className="set-billing-text">
                   Your next bill is for <strong>$29.00</strong> on Oct 12, 2023
                 </span>
-                <a href="#" className="set-view-history">VIEW HISTORY</a>
+                <button className="set-view-history">VIEW HISTORY</button>
               </div>
             </div>
 
@@ -251,6 +183,11 @@ export default function Settings({ onNavigate }) {
           </main>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
+
+
+
+

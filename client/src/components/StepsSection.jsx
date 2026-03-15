@@ -139,7 +139,7 @@ function StepsSection() {
               rendering engine that brings textures and proportions to life.
             </p>
 
-            <a className="step-link">Explore 3D Mode →</a>
+            <button className="step-link">Explore 3D Mode →</button>
 
           </div>
 

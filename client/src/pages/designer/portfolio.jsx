@@ -4,8 +4,9 @@ import bedroom from '../../assets/bedroom.png';
 import office from '../../assets/office.png';
 import kitchen from '../../assets/kitchen.png';
 import lobby from '../../assets/lobby.png';
-import { Search, Bell, Settings, Plus, Heart, Edit, Share2, Eye } from 'lucide-react';
-import Sidebar from './Sidebar';
+import { Plus, Heart, Edit, Share2, Eye } from 'lucide-react';
+import LoggedInNavbar from '../../components/LoggedInNavbar';
+import Sidebar from '../../components/DesignerSidebar';
 
 const Portfolio = () => {
   const [activeFilter, setActiveFilter] = useState('ALL PROJECTS');
@@ -56,43 +57,13 @@ const Portfolio = () => {
   ];
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      {/* Sidebar */}
-      <Sidebar />
-
-      {/* Main Content */}
-      <div className="flex-1 ml-64 flex flex-col">
-        {/* Top Header */}
-        <header className="bg-white border-b border-gray-200 h-[73px] flex items-center px-8 flex-shrink-0">
-          {/* Empty space on left - pushes everything to the right */}
-          <div className="flex-1"></div>
-
-          {/* Right side - Search + Icons */}
-          <div className="flex items-center gap-3">
-            {/* Search Bar */}
-            <div className="relative w-80">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-              <input
-                type="text"
-                placeholder="Search projects, clients..."
-                className="w-full pl-10 pr-4 py-2 bg-gray-100 border-0 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-              <Bell size={20} className="text-gray-600" />
-            </button>
-            <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-              <Settings size={20} className="text-gray-600" />
-            </button>
-            <div className="w-9 h-9 bg-gradient-to-br from-orange-400 to-pink-500 rounded-full flex items-center justify-center">
-              <span className="text-white text-sm font-semibold">AJ</span>
-            </div>
-          </div>
-        </header>
-
-        {/* Main Content Area */}
-        <div className="flex-1 overflow-y-auto">
+    <>
+      <LoggedInNavbar userRole="designer" />
+      <div className="des-wrapper">
+        <Sidebar />
+        <div className="des-frame">
+          <div className="des-layout">
+            <main className="des-content">
           <div className="max-w-7xl mx-auto px-8 py-8">
             {/* Page Title & New Project Button */}
             <div className="flex items-start justify-between mb-6">
@@ -128,7 +99,6 @@ const Portfolio = () => {
 
             {/* Projects Grid */}
             <div className="grid grid-cols-3 gap-6 mb-8">
-              {/* Project Cards */}
               {projects.map((project) => (
                 <div key={project.id} className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
                   {/* Project Image */}
@@ -195,12 +165,12 @@ const Portfolio = () => {
             {/* Pagination */}
             <div className="flex items-center justify-between">
               <p className="text-sm text-gray-600">Showing 6 of 32 projects</p>
-              
+
               <div className="flex items-center gap-2">
                 <button className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
                   <span className="text-gray-600">&lt;</span>
                 </button>
-                
+
                 <button className="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-600 text-white font-semibold text-sm">
                   1
                 </button>
@@ -210,16 +180,18 @@ const Portfolio = () => {
                 <button className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors text-sm font-medium text-gray-700">
                   3
                 </button>
-                
+
                 <button className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
                   <span className="text-gray-600">&gt;</span>
                 </button>
               </div>
             </div>
           </div>
+          </main>
         </div>
       </div>
     </div>
+    </>
   );
 };
 

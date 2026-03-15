@@ -132,6 +132,9 @@ justify-content:center;
   object-fit:cover;
   border-radius:12px;
 
+  transform: translateY(var(--hiw-hero-image, 0px));
+  transition: transform 0.1s linear;
+
   box-shadow:
   0px 25px 50px -12px rgba(0,0,0,0.25);
 }
@@ -154,6 +157,9 @@ border-radius:12px;
 box-shadow:
 0px 8px 10px rgba(0,0,0,0.10),
 0px 20px 25px rgba(0,0,0,0.10);
+
+transform: translateY(var(--hiw-hero-card, 0px));
+transition: transform 0.1s linear;
 }
 
 /* GREEN ICON */

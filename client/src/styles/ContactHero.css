@@ -8,7 +8,7 @@
 }
 
 /* Main container */
-.hero-container {
+.contact-hero .hero-container {
   max-width: 896px;
   width: 100%;
   text-align: center;
@@ -22,7 +22,7 @@
 }
 
 /* Support Center badge */
-.support-badge {
+.contact-hero .support-badge {
   font-family: "Inter", sans-serif;
   font-size: 14px;
   font-weight: 600;
@@ -36,7 +36,7 @@
 }
 
 /* Main heading */
-.hero-title {
+.contact-hero .hero-title {
   font-family: "Inter", sans-serif;
   font-weight: 900;
   font-size: 60px;
@@ -49,7 +49,7 @@
 }
 
 /* description */
-.hero-description {
+.contact-hero .hero-description {
   font-family: "Inter", sans-serif;
   font-size: 18px;
   font-weight: 400;

@@ -1,10 +1,10 @@
 import React from "react";
 import "../styles/MeetLeadership.css";
 
-import avatar7 from "../assets/avatar7.jpg";
-import avatar8 from "../assets/avatar8.jpg";
-import avatar9 from "../assets/avatar9.jpg";
-import avatar10 from "../assets/avatar10.jpg";
+import alexJ from "../assets/alexj.jpg";
+import avatar4 from "../assets/avatar4.jpg";
+import avatar5 from "../assets/avatar5.jpg";
+import avatar6 from "../assets/avatar6.jpg";
 
 function MeetLeadership() {
 
@@ -12,22 +12,22 @@ function MeetLeadership() {
     {
       name: "Alex Rivers",
       role: "CEO & Co-Founder",
-      image: avatar7
+      image: alexJ
     },
     {
       name: "Sarah Chen",
       role: "Chief Technology Officer",
-      image: avatar8
+      image: avatar4
     },
     {
       name: "Marcus Thorne",
       role: "Head of Design",
-      image: avatar9
+      image: avatar5
     },
     {
       name: "Elena Rodriguez",
       role: "VP of Product",
-      image: avatar10
+      image: avatar6
     }
   ];
 

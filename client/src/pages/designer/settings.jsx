@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import profileImage from '../../assets/alexj.jpg';
 import pencilButton from '../../assets/pencilButton.png';
-import { Search, Bell, Settings as SettingsIcon, MapPin, CheckCircle, CreditCard } from 'lucide-react';
-import Sidebar from './Sidebar';
+import { Bell, MapPin, CheckCircle, CreditCard } from 'lucide-react';
+import Sidebar from '../../components/DesignerSidebar';
+import LoggedInNavbar from '../../components/LoggedInNavbar';
 
 const Settings = () => {
   const [notifications, setNotifications] = useState({
@@ -50,38 +51,13 @@ const Settings = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      {/* Sidebar */}
-      <Sidebar />
-
-      {/* Main Content */}
-      <div className="flex-1 ml-64 flex flex-col">
-        {/* Top Header */}
-        <header className="bg-white border-b border-gray-200 h-[73px] flex items-center px-8 flex-shrink-0">
-          <div className="flex-1"></div>
-          <div className="flex items-center gap-3">
-            <div className="relative w-80">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-              <input
-                type="text"
-                placeholder="Search projects, clients..."
-                className="w-full pl-10 pr-4 py-2 bg-gray-100 border-0 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-              <Bell size={20} className="text-gray-600" />
-            </button>
-            <button className="p-2 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
-              <SettingsIcon size={20} className="text-blue-600" />
-            </button>
-            <div className="w-9 h-9 bg-gradient-to-br from-orange-400 to-pink-500 rounded-full flex items-center justify-center">
-              <span className="text-white text-sm font-semibold">AJ</span>
-            </div>
-          </div>
-        </header>
-
-        {/* Main Content Area */}
-        <div className="flex-1 overflow-y-auto">
+    <>
+      <LoggedInNavbar userRole="designer" />
+      <div className="des-wrapper">
+        <Sidebar />
+        <div className="des-frame">
+          <div className="des-layout">
+            <main className="des-content">
           <div className="max-w-5xl mx-auto px-8 py-8">
             {/* Page Title */}
             <div className="mb-8">
@@ -95,19 +71,18 @@ const Settings = () => {
                 {/* Avatar */}
                 <div className="relative">
                   <img
-  src={profileImage}
-  alt="alexj"
-  className="w-24 h-24 rounded-lg border-4 border-white shadow-lg"
-/>
-                  {/* Pencil Edit Button - Bottom Right Corner, Larger */}
-  <div className="absolute -bottom-6 -right-4 cursor-pointer">
-    <img 
-      src={pencilButton} 
-      alt="Edit" 
-      className="w-10 h-10"
-    />
-  </div>
-</div>
+                    src={profileImage}
+                    alt="alexj"
+                    className="w-24 h-24 rounded-lg border-4 border-white shadow-lg"
+                  />
+                  <div className="absolute -bottom-6 -right-4 cursor-pointer">
+                    <img
+                      src={pencilButton}
+                      alt="Edit"
+                      className="w-10 h-10"
+                    />
+                  </div>
+                </div>
 
                 {/* Profile Info */}
                 <div className="flex-1">
@@ -120,7 +95,7 @@ const Settings = () => {
                       Change Photo
                     </button>
                   </div>
-                  
+
                   <div className="flex items-center gap-4 mt-3">
                     <div className="flex items-center gap-2 text-sm text-gray-600">
                       <MapPin size={16} className="text-gray-400" />
@@ -320,9 +295,11 @@ const Settings = () => {
               </button>
             </div>
           </div>
+          </main>
         </div>
       </div>
     </div>
+    </>
   );
 };
 

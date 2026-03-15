@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
+import LoggedInNavbar from '../../components/LoggedInNavbar';
+import DesignerSidebar from '../../components/DesignerSidebar';
 import velvet_sofa from '../../assets/velvet_sofa.jpg';
 import oak_table from '../../assets/oak_table.jpg';
 import armchair from '../../assets/armchair.jpg';
 import bedframe from '../../assets/bedframe.jpg';
 import pendantlight from '../../assets/pendantlight.jpg';
 import bookshelf from '../../assets/bookshelf.jpg';
-import { Search, Bell, Settings, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
-import Sidebar from './Sidebar';
+import { Heart, ChevronLeft, ChevronRight, Search } from "lucide-react";
 
+
+import '../../styles/designer/Library.css';
 const Library = () => {
   const [activeTab, setActiveTab] = useState('All Items');
   const [sortBy, setSortBy] = useState('Most Popular');
@@ -124,43 +127,16 @@ const Library = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      {/* Sidebar */}
-      <Sidebar />
-
-      {/* Main Content */}
-      <div className="flex-1 ml-64 flex flex-col">
-        {/* Top Header */}
-<header className="bg-white border-b border-gray-200 h-[73px] flex items-center px-8 flex-shrink-0">
-  {/* Empty space on left - pushes everything to the right */}
-  <div className="flex-1"></div>
-
-  {/* Right side - Search + Icons */}
-  <div className="flex items-center gap-3">
-    {/* Search Bar */}
-    <div className="relative w-80">
-      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-      <input
-        type="text"
-        placeholder="Search projects, clients..."
-        className="w-full pl-10 pr-4 py-2 bg-gray-100 border-0 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
-    </div>
-
-    <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-      <Bell size={20} className="text-gray-600" />
-    </button>
-    <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-      <Settings size={20} className="text-gray-600" />
-    </button>
-    <div className="w-9 h-9 bg-gradient-to-br from-orange-400 to-pink-500 rounded-full flex items-center justify-center">
-      <span className="text-white text-sm font-semibold">AJ</span>
-    </div>
-  </div>
-</header>
+    <>
+      <LoggedInNavbar userRole="designer" />
+      <div className="des-wrapper">
+      <DesignerSidebar />
+      <div className="des-frame">
+        <div className="des-layout">
+        
 
         {/* Content Area */}
-        <div className="flex-1 flex overflow-hidden">
+        <main className="des-content flex-1 flex overflow-hidden">
           {/* Left Filters Panel */}
           <div className="w-64 bg-white border-r border-gray-200 overflow-y-auto flex-shrink-0">
             <div className="p-6">
@@ -387,11 +363,11 @@ const Library = () => {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
+          </div></main></div></div></div>
+    </>
   );
 };
 
+
 export default Library;
+

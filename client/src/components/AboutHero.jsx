@@ -1,8 +1,31 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "../styles/AboutHero.css";
 import heroImage from "../assets/about-hero.png";   // your hero image
 
 function AboutHero() {
+  useEffect(() => {
+    let isTicking = false;
+
+    const onScroll = () => {
+      if (isTicking) return;
+      isTicking = true;
+
+      window.requestAnimationFrame(() => {
+        const offset = window.scrollY || 0;
+        const bgShift = Math.min(offset * 0.08, 24);
+        const contentShift = Math.min(offset * 0.04, 12);
+
+        document.documentElement.style.setProperty("--about-hero-bg", `${bgShift}px`);
+        document.documentElement.style.setProperty("--about-hero-content", `${contentShift}px`);
+        isTicking = false;
+      });
+    };
+
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
     <section className="about-hero">
 

@@ -2,11 +2,13 @@
   width:100%;
   background:#F6F6F8;
   padding:56px 32px;
+  overflow-x: hidden;
 }
 
 .features-container{
   max-width:1280px;
   margin:auto;
+  width:100%;
 }
 
 
@@ -54,6 +56,23 @@
   display:grid;
   grid-template-columns:repeat(3,1fr);
   gap:20px;
+  width:100%;
+}
+
+@media (max-width: 1024px) {
+  .features-grid{
+    grid-template-columns:repeat(2, minmax(0,1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .features{
+    padding:44px 20px;
+  }
+
+  .features-grid{
+    grid-template-columns:1fr;
+  }
 }
 
 

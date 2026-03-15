@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "../styles/Hero.css";
 
 import heroImage from "../assets/hero-image.png";
@@ -7,11 +7,36 @@ import avatar2 from "../assets/avatar2.jpg";
 import avatar3 from "../assets/avatar3.jpg";
 
 function Hero() {
+  useEffect(() => {
+    let isTicking = false;
+
+    const onScroll = () => {
+      if (isTicking) return;
+      isTicking = true;
+
+      window.requestAnimationFrame(() => {
+        const offset = window.scrollY || 0;
+        const parallax = Math.min(offset * 0.12, 32);
+        const parallaxBg = Math.min(offset * 0.08, 22);
+        const parallaxText = Math.min(offset * 0.06, 16);
+
+        document.documentElement.style.setProperty("--hero-parallax", `${parallax}px`);
+        document.documentElement.style.setProperty("--hero-parallax-bg", `${parallaxBg}px`);
+        document.documentElement.style.setProperty("--hero-parallax-text", `${parallaxText}px`);
+        isTicking = false;
+      });
+    };
+
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
     <section className="hero">
       <div className="hero-container">
 
-        {/* LEFT SIDE */}
+        {/* LEFT SIDE - TEXT */}
         <div className="hero-left">
 
           <div className="hero-badge">
@@ -47,8 +72,7 @@ function Hero() {
 
         </div>
 
-
-        {/* RIGHT SIDE */}
+        {/* RIGHT SIDE - IMAGE */}
         <div className="hero-right">
 
           {/* Decorative Blur */}

@@ -33,30 +33,30 @@ function PrivacyPolicy() {
 
               <nav className="toc-links">
 
-                <a className="toc-link active">
+                <button className="toc-link active">
                   <Info size={18} />
                   Introduction
-                </a>
+                </button>
 
-                <a className="toc-link">
+                <button className="toc-link">
                   <Database size={18} />
                   Information Collection
-                </a>
+                </button>
 
-                <a className="toc-link">
+                <button className="toc-link">
                   <BarChart3 size={18} />
                   Data Usage
-                </a>
+                </button>
 
-                <a className="toc-link">
+                <button className="toc-link">
                   <Shield size={18} />
                   Data Security
-                </a>
+                </button>
 
-                <a className="toc-link">
+                <button className="toc-link">
                   <Share2 size={18} />
                   Third-Party Sharing
-                </a>
+                </button>
 
               </nav>
             </div>
@@ -72,9 +72,9 @@ function PrivacyPolicy() {
                 Our team is here to assist you.
               </p>
 
-              <a href="#" className="contact-link">
+              <button className="contact-link">
                 Contact Privacy Team
-              </a>
+              </button>
 
             </div>
 

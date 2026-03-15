@@ -1,6 +1,7 @@
 import { useState } from "react";
+import LoggedInNavbar from "../../components/LoggedInNavbar";
+import CustomerSidebar from "../../components/CustomerSidebar";
 import "../../styles/customer/Inspiration.css";
-import logoImage from "../../assets/Logo.png";
 import sunDrenchedImg from "../../assets/Inspiraton/sun-drenched.png";
 import brooklynLoftImg from "../../assets/Inspiraton/brooklyn-loft.png";
 import contemporaryDiningImg from "../../assets/Inspiraton/contemporary-dining.png";
@@ -51,79 +52,24 @@ const inspirations = [
 
 const filters = ["All Styles", "Modern", "Industrial", "Minimalist", "Scandinavian"];
 
-export default function Inspiration({ onNavigate }) {
-  const [activeNav, setActiveNav] = useState("Inspiration");
+export default function Inspiration() {
+
+
   const [activeFilter, setActiveFilter] = useState("All Styles");
   const [savedItems, setSavedItems] = useState({ 4: true });
-
-  const navItems = [
-    { label: "Dashboard", icon: "⊞" },
-    { label: "My Designs", icon: "✏️" },
-    { label: "Library", icon: "🪑" },
-    { label: "Inspiration", icon: "💡" },
-  ];
 
   const toggleSave = (id) => {
     setSavedItems((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const handleNavClick = (label) => {
-    setActiveNav(label);
-    if (onNavigate) {
-      if (label === "Dashboard") onNavigate("dashboard");
-      if (label === "My Designs") onNavigate("MyDesigns");
-      if (label === "Library") onNavigate("Library");
-    }
-  };
-
   return (
-    <div className="ins-wrapper">
+    <>
+      <LoggedInNavbar userRole="customer" />
+      <div className="ins-wrapper">
+      <CustomerSidebar />
       <div className="ins-frame">
 
-        {/* Top Navbar */}
-        <nav className="ins-topnav">
-          <div className="ins-logo">
-            <img src={logoImage} alt="Roomio logo" className="ins-logo-icon" />
-            <span className="ins-logo-text">Roomio</span>
-          </div>
-          <div className="ins-topnav-right">
-            <a href="#" className="ins-nav-link" onClick={() => handleNavClick("Dashboard")}>Dashboard</a>
-            <a href="#" className="ins-nav-link" onClick={() => handleNavClick("My Designs")}>My Designs</a>
-            <a href="#" className="ins-nav-link" onClick={() => handleNavClick("Library")}>Library</a>
-            <div className="ins-icon-btn">🔔</div>
-            <div className="ins-icon-btn">⚙️</div>
-            <div className="ins-avatar">
-              <img src="https://i.pravatar.cc/36?img=12" alt="avatar" />
-            </div>
-          </div>
-        </nav>
-
         <div className="ins-layout">
-
-          {/* Sidebar */}
-          <aside className="ins-sidebar">
-            <div className="ins-sidebar-label">MAIN MENU</div>
-            <ul className="ins-sidebar-nav">
-              {navItems.map((item) => (
-                <li
-                  key={item.label}
-                  className={`ins-sidebar-item ${activeNav === item.label ? "ins-sidebar-item--active" : ""}`}
-                  onClick={() => handleNavClick(item.label)}
-                >
-                  <span className="ins-sidebar-icon">{item.icon}</span>
-                  {item.label}
-                </li>
-              ))}
-            </ul>
-
-            <div className="ins-sidebar-label" style={{ marginTop: "24px" }}>ACCOUNT</div>
-            <ul className="ins-sidebar-nav">
-              <li className="ins-sidebar-item" onClick={() => onNavigate("Settings")}><span className="ins-sidebar-icon">⚙️</span> Settings</li>
-              <li className="ins-sidebar-item"><span className="ins-sidebar-icon">❓</span> Support</li>
-            </ul>
-
-            <button className="ins-logout-btn">Log Out</button>
-          </aside>
 
           {/* Main Content */}
           <main className="ins-content">
@@ -192,6 +138,11 @@ export default function Inspiration({ onNavigate }) {
           </main>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
+
+
+
+

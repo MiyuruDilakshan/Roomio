@@ -1,6 +1,7 @@
-import { useState } from "react";
+
+import LoggedInNavbar from "../../components/LoggedInNavbar";
+import CustomerSidebar from "../../components/CustomerSidebar";
 import "../../styles/customer/Dashboard.css";
-import logoImage from "../../assets/Logo.png";
 import modernLivingImage from "../../assets/Dashboard/modern-living.png";
 import scandiBedroomImage from "../../assets/Dashboard/scandi-bedroom.png";
 import homeOfficeImage from "../../assets/Dashboard/home-office.png";
@@ -20,77 +21,15 @@ const recentDesigns = [
   { title: "Minimalist Kitchen", updated: "Updated 1 week ago", badge: "NEW", badgeClass: "badge-new" },
 ];
 
-export default function Dashboard({ onNavigate }) {
-  const [active, setActive] = useState("Dashboard");
-
-  const navItems = [
-    { label: "Dashboard", icon: "⊞" },
-    { label: "My Designs", icon: "✏️" },
-    { label: "Library", icon: "🪑" },
-    { label: "Inspiration", icon: "💡" },
-  ];
+export default function Dashboard() {
 
   return (
-    <div className="app-wrapper">
-      <div className="app-frame">
-        {/* Top Navbar */}
-        <nav className="topnav">
-          <div className="topnav-left">
-            <div className="logo">
-              <img src={logoImage} alt="Roomio logo" className="logo-icon" />
-              <span className="logo-text">Roomio</span>
-            </div>
-            <div className="search-bar">
-              <span className="search-icon">🔍</span>
-              <input type="text" placeholder="Search projects..." />
-            </div>
-          </div>
-          <div className="topnav-right">
-            <a href="#" className={active === "Dashboard" ? "nav-link active" : "nav-link"} onClick={() => setActive("Dashboard")}>Dashboard</a>
-            <a href="#" className="nav-link" onClick={(e) => { e.preventDefault(); onNavigate("MyDesigns"); }}>My Designs</a>
-            <a href="#" className="nav-link" onClick={(e) => { e.preventDefault(); onNavigate("Library"); }}>Library</a>
-            <div className="icon-btn">🔔</div>
-            <div className="icon-btn">⚙️</div>
-            <div className="avatar">
-              <img src="https://i.pravatar.cc/36?img=12" alt="avatar" />
-            </div>
-          </div>
-        </nav>
-
+    <>
+      <LoggedInNavbar userRole="customer" />
+      <div className="app-wrapper">
+        <CustomerSidebar />
+        <div className="app-frame">
         <div className="main-layout">
-          {/* Sidebar */}
-          <aside className="sidebar">
-            <div className="sidebar-section-label">MAIN MENU</div>
-            <ul className="sidebar-nav">
-              {navItems.map((item) => (
-                <li
-                  key={item.label}
-                  className={`sidebar-item ${active === item.label ? "sidebar-item--active" : ""}`}
-                  onClick={() => {
-                    if (item.label === "My Designs") { onNavigate("MyDesigns"); return; }
-                    if (item.label === "Library") { onNavigate("Library"); return; }
-                    if (item.label === "Inspiration") { onNavigate("Inspiration"); return; }
-                    setActive(item.label);
-                  }}
-                >
-                  <span className="sidebar-item-icon">{item.icon}</span>
-                  {item.label}
-                </li>
-              ))}
-            </ul>
-
-            <div className="sidebar-section-label" style={{ marginTop: "24px" }}>ACCOUNT</div>
-            <ul className="sidebar-nav">
-              <li className="sidebar-item" onClick={() => onNavigate("Settings")}>
-                <span className="sidebar-item-icon">⚙️</span> Settings
-              </li>
-              <li className="sidebar-item">
-                <span className="sidebar-item-icon">❓</span> Support
-              </li>
-            </ul>
-
-            <button className="logout-btn">Log Out</button>
-          </aside>
 
           {/* Main Content */}
           <main className="content">
@@ -123,7 +62,7 @@ export default function Dashboard({ onNavigate }) {
             {/* Recent Designs */}
             <div className="section-header">
               <h2 className="section-title">Recent Designs</h2>
-              <a href="#" className="view-all">View All</a>
+              <button className="view-all">View All</button>
             </div>
 
             <div className="designs-grid">
@@ -151,6 +90,9 @@ export default function Dashboard({ onNavigate }) {
           </main>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
+
+

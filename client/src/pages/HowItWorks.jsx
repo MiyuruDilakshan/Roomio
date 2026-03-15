@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "../styles/HowItWorks.css";
@@ -8,11 +8,54 @@ import CallToAction from "../components/CallToAction";
 import heroImage from "../assets/hero-image2.png";
 
 function HowItWorks() {
+  useEffect(() => {
+    const elements = Array.from(document.querySelectorAll("[data-reveal]"));
+    if (elements.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.18, rootMargin: "0px 0px -10% 0px" }
+    );
+
+    elements.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    let isTicking = false;
+
+    const onScroll = () => {
+      if (isTicking) return;
+      isTicking = true;
+
+      window.requestAnimationFrame(() => {
+        const offset = window.scrollY || 0;
+        const imageShift = Math.min(offset * 0.06, 18);
+        const cardShift = Math.min(offset * 0.04, 12);
+
+        document.documentElement.style.setProperty("--hiw-hero-image", `${imageShift}px`);
+        document.documentElement.style.setProperty("--hiw-hero-card", `${cardShift}px`);
+        isTicking = false;
+      });
+    };
+
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
     <>
       <Navbar />
 
-      <section className="hiw-hero">
+      <section className="hiw-hero reveal reveal--zoom" data-reveal>
         <div className="hiw-container">
 
           {/* LEFT SIDE */}
@@ -139,9 +182,15 @@ function HowItWorks() {
 
         </div>
       </section>
-      <StepsSection />
-      <CallToAction />
-      <Footer />
+      <div className="reveal reveal--fade" data-reveal>
+        <StepsSection />
+      </div>
+      <div className="reveal reveal--pop" data-reveal>
+        <CallToAction />
+      </div>
+      <div className="reveal reveal--fade" data-reveal>
+        <Footer />
+      </div>
     </>
   );
 }

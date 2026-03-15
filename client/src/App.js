@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import React, { useEffect, useLayoutEffect } from "react";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 
 // Pages - Public
 import LandingPage from "./pages/LandingPage";
@@ -8,7 +8,8 @@ import Signup from "./pages/Signup";
 import NotFoundPage from "./pages/NotFoundPage";
 import HowItWorks from "./pages/HowItWorks";
 import AboutPage from "./pages/AboutPage";
-import PrivacyPolicy from "./pages/PrivacyPolicy";
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
 import ContactPage from "./pages/ContactPage";
 
 // Pages - Customer
@@ -17,6 +18,14 @@ import MyDesigns from "./pages/customer/MyDesigns";
 import Library from "./pages/customer/Library";
 import Inspiration from "./pages/customer/Inspiration";
 import Settings from "./pages/customer/Settings";
+
+// Pages - Designer
+import DesignerDashboard from "./pages/designer/dashboard";
+import DesignerPortfolio from "./pages/designer/portfolio";
+import DesignerLibrary from "./pages/designer/library";
+import DesignerInspiration from "./pages/designer/inspiration";
+import DesignerSettings from "./pages/designer/settings";
+import DesignerClients from "./pages/designer/clients";
 
 function injectStyles() {
   if (document.getElementById("roomio-transitions")) return;
@@ -41,15 +50,23 @@ function AppRoutes() {
     injectStyles();
   }, []);
 
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
+  const isDashboardRoute = location.pathname.startsWith('/designer') || location.pathname.startsWith('/customer');
+
   return (
-    <div key={location.pathname} className="rt-fade">
+    <div key={isDashboardRoute ? 'dashboard' : location.pathname} className={isDashboardRoute ? "" : "rt-fade"}>
       <Routes>
         {/* Public Routes */}
-        <Route path="/" element={<LandingPage />} />
+        <Route path="/" element={<LandingPage />} /> 
+        <Route path="/home" element={<LandingPage />} />
         <Route path="/how-it-works" element={<HowItWorks />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<TermsOfService />} />
 
         {/* Auth Routes */}
         <Route path="/login" element={<Login />} />
@@ -63,6 +80,15 @@ function AppRoutes() {
         <Route path="/customer/inspiration" element={<Inspiration />} />
         <Route path="/customer/settings" element={<Settings />} />
 
+        {/* Designer Routes */}
+        <Route path="/designer" element={<Navigate to="/designer/dashboard" replace />} />
+        <Route path="/designer/dashboard" element={<DesignerDashboard />} />
+        <Route path="/designer/portfolio" element={<DesignerPortfolio />} />
+        <Route path="/designer/library" element={<DesignerLibrary />} />
+        <Route path="/designer/inspiration" element={<DesignerInspiration />} />
+        <Route path="/designer/clients" element={<DesignerClients />} />
+        <Route path="/designer/settings" element={<DesignerSettings />} />
+
         {/* 404 Route */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
@@ -71,11 +97,7 @@ function AppRoutes() {
 }
 
 function App() {
-  return (
-    <BrowserRouter>
-      <AppRoutes />
-    </BrowserRouter>
-  );
+  return <AppRoutes />;
 }
 
 export default App;
