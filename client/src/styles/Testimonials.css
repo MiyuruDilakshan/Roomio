@@ -1,0 +1,110 @@
+/* Section */
+
+.testimonials{
+  width:100%;
+  padding:96px 0;
+  background:#ffffff;
+}
+
+
+/* Container */
+
+.testimonials-container{
+  width:1280px;
+  margin:auto;
+  padding:0 32px;
+}
+
+
+/* Heading */
+
+.testimonials-title{
+  text-align:center;
+  font-family:"Inter";
+  font-weight:900;
+  font-size:30px;
+  color:#0F172A;
+  margin-bottom:64px;
+}
+
+
+/* Grid */
+
+.testimonials-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:32px;
+}
+
+
+/* Card */
+
+.testimonial-card{
+  background:#F6F6F8;
+  border-radius:16px;
+  padding:32px;
+}
+
+
+/* Stars */
+
+.stars{
+  display:flex;
+  gap:4px;
+  margin-bottom:16px;
+}
+
+.star{
+  fill:#ffffff;
+  stroke:#FACC15;
+  stroke-width:2;
+}
+
+/* Text */
+
+.testimonial-text{
+  font-family:"Inter";
+  font-size:16px;
+  line-height:24px;
+  color:#475569;
+  margin-bottom:24px;
+}
+
+
+/* Author section */
+
+.testimonial-author{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+
+/* Avatar */
+
+.testimonial-author img{
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  object-fit:cover;
+}
+
+
+/* Name + Role */
+
+.author-info{
+  display:flex;
+  flex-direction:column;
+}
+
+.author-name{
+  font-family:"Inter";
+  font-size:16px;
+  font-weight:700;
+  color:#0F172A;
+}
+
+.author-role{
+  font-size:12px;
+  color:#64748B;
+}

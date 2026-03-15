@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import "../styles/Navbar.css";
 import logoIcon from "../assets/Icon.png";
 
@@ -21,16 +22,18 @@ function Navbar() {
 
         {/* Navigation Links */}
         <nav className="nav-links">
-          <a href="#" className="active">Home</a>
-          <a href="#">How It Works</a>
-          <a href="#">About</a>
-          <a href="#">Contact</a>
+          <Link to="/" className="active">Home</Link>
+          <Link to="/how-it-works">How It Works</Link>
+          <Link to="/about">About</Link>
+          <Link to="/contact">Contact</Link>
         </nav>
 
         {/* Right Side */}
         <div className="nav-actions">
-          <a href="#" className="login">Login</a>
-          <button className="get-started">Get Started</button>
+          <Link to="/login" className="login">Login</Link>
+          <Link to="/signup">
+            <button className="get-started">Get Started</button>
+          </Link>
         </div>
 
       </div>
