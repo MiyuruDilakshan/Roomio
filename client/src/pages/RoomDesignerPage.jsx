@@ -5,6 +5,7 @@ import { furnitureItems } from "../data/furnitureData";
 import { getPendingEditorConfig } from "../utils/storage";
 import { designAPI } from "../services/designAPI";
 import { useToast } from "../hooks/useToast";
+import html2canvas from "html2canvas";
 import Toast from "../components/common/Toast";
 import FurnitureLibrary from "../components/designer/FurnitureLibrary";
 import FurnitureModal from "../components/designer/FurnitureModal";
@@ -48,6 +49,8 @@ export default function RoomDesignerPage() {
   const { user, isAuthenticated } = useAuth();
   const { toasts, removeToast, success, error: showError } = useToast();
   const hasLoadedRef = useRef(false);
+  const mainContentRef = useRef(null);
+  const designerCanvasRef = useRef(null);
 
   const initialConfig =
     location.state?.config || getPendingEditorConfig() || makeDefaultConfig();
@@ -261,35 +264,77 @@ export default function RoomDesignerPage() {
       URL.revokeObjectURL(url);
       success("Design exported as JSON!");
     } else if (format === "jpg") {
-      // Wait a bit for canvas to fully render, then capture
-      setTimeout(() => {
-        const canvas = document.querySelector("canvas");
-        
-        if (!canvas) {
-          showError("Cannot capture canvas. Please try again.");
-          return;
-        }
-
+      // Export based on current view mode
+      setTimeout(async () => {
         try {
-          // Get the WebGL canvas context to ensure proper rendering
-          const imageData = canvas.toDataURL("image/jpeg", 0.95);
+          let imageData;
 
-          // Create a link and trigger download
-          const link = document.createElement("a");
-          link.href = imageData;
-          link.download = `room-design-${config.projectName || "design"}.jpg`;
-          
-          // Trigger download
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          
-          success("Design exported as JPG!");
+          if (viewMode === "3d") {
+            // For 3D view: Use the DesignerCanvas ref to capture WebGL canvas
+            if (!designerCanvasRef.current || !designerCanvasRef.current.screenshot) {
+              showError("3D view not ready. Please wait a moment and try again.");
+              return;
+            }
+
+            // Call the screenshot function from DesignerCanvas
+            designerCanvasRef.current.screenshot((data, error) => {
+              if (error) {
+                showError(`Failed to capture 3D view: ${error}`);
+                return;
+              }
+
+              if (!data) {
+                showError("3D canvas is empty. Please try again.");
+                return;
+              }
+
+              // Download the image
+              const link = document.createElement("a");
+              link.href = data;
+              link.download = `room-design-${config.projectName || "design"}.jpg`;
+              
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+              
+              success("3D design exported as JPG!");
+            });
+            return;
+          } else {
+            // For 2D view: Use html2canvas to capture SVG
+            const mainContent = mainContentRef.current;
+            if (!mainContent) {
+              showError("Cannot find 2D view to export. Please try again.");
+              return;
+            }
+
+            const canvas = await html2canvas(mainContent, {
+              backgroundColor: "#ffffff",
+              scale: 2,
+              logging: false,
+              allowTaint: true,
+              useCORS: true,
+              maxWidth: 1920,
+              maxHeight: 1080,
+            });
+            imageData = canvas.toDataURL("image/jpeg", 0.95);
+
+            // Download the image
+            const link = document.createElement("a");
+            link.href = imageData;
+            link.download = `room-design-${config.projectName || "design"}.jpg`;
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            success("2D design exported as JPG!");
+          }
         } catch (error) {
           console.error("Export error:", error);
-          showError("Failed to export as JPG. Try again.");
+          showError("Failed to export as JPG. Please try again.");
         }
-      }, 500);
+      }, 100);
     }
   };
 
@@ -591,6 +636,7 @@ export default function RoomDesignerPage() {
           />
 
           <main
+            ref={mainContentRef}
             style={{
               position: "relative",
               minWidth: 0,
@@ -607,6 +653,7 @@ export default function RoomDesignerPage() {
                 selectedItemId={selectedItemId}
                 onSelectItem={setSelectedItemId}
                 onMoveItem={updateRoomItemPosition}
+                exportRef={designerCanvasRef}
               />
             ) : (
               <Room2DPlan

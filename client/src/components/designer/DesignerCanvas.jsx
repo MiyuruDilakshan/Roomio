@@ -275,6 +275,7 @@ export default function DesignerCanvas({
   selectedItemId,
   onSelectItem,
   onMoveItem,
+  exportRef,
 }) {
   const h = config.dimensions.height;
   const dragPlaneRef = useRef(null);
@@ -315,9 +316,36 @@ export default function DesignerCanvas({
 
   const ambientIntensity = useMemo(() => getAmbientIntensity(), [config.lighting?.timeOfDay]);
 
+  // Expose screenshot function to parent if ref provided
+  const handleScreenshot = (callback) => {
+    const canvas = document.querySelector('main canvas');
+    if (!canvas) {
+      callback(null, 'Canvas not found');
+      return;
+    }
+    try {
+      const imageData = canvas.toDataURL('image/jpeg', 0.95);
+      if (!imageData || imageData === 'data:image/jpeg;base64,') {
+        callback(null, 'Canvas is empty');
+        return;
+      }
+      callback(imageData, null);
+    } catch (error) {
+      callback(null, error.message);
+    }
+  };
+
+  if (exportRef) {
+    exportRef.current = { screenshot: handleScreenshot };
+  }
+
   return (
     <Canvas
       shadows
+      gl={{
+        preserveDrawingBuffer: true,
+        antialias: true,
+      }}
       camera={{
         position: [0, h * 0.95, Math.max(config.dimensions.width, config.dimensions.length) * 1.45],
         fov: 42,
