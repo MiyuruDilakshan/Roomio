@@ -24,6 +24,9 @@ body {
   height: 100vh;
   width: 100vw;
   background: #e8eaf0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
 }
 
 @media (min-width: 1024px) {
@@ -49,103 +52,108 @@ body {
   padding: 8px 12px;
   background: #fff;
   border-bottom: 1px solid #e5e7eb;
-  gap: 12px;
+  gap: 8px;
   flex-wrap: wrap;
+  flex-shrink: 0;
 }
 
 @media (min-width: 640px) {
   .topnav {
-    padding: 10px 16px;
-    gap: 14px;
+    padding: 9px 14px;
+    gap: 12px;
   }
 }
 
 @media (min-width: 1024px) {
   .topnav {
-    padding: 10px 20px;
-    gap: 16px;
+    padding: 10px 18px;
+    gap: 14px;
   }
 }
 
 .topnav-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   flex-wrap: wrap;
+  min-width: 0;
 }
 
 @media (min-width: 768px) {
   .topnav-left {
-    gap: 16px;
+    gap: 14px;
   }
 }
 
 .logo {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   font-weight: 700;
-  font-size: 14px;
+  font-size: 12px;
   color: #1a1a2e;
   white-space: nowrap;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 640px) {
   .logo {
-    font-size: 16px;
+    font-size: 13px;
+    gap: 5px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .logo {
+    font-size: 15px;
     gap: 6px;
   }
 }
 
-@media (min-width: 1024px) {
-  .logo {
-    font-size: 18px;
-  }
-}
-
 .logo-icon {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   object-fit: contain;
   display: block;
+  flex-shrink: 0;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 640px) {
   .logo-icon {
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
   }
 }
 
 @media (min-width: 1024px) {
   .logo-icon {
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 26px;
   }
 }
 
 .search-bar {
   display: none;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   background: #f3f4f6;
   border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 6px 12px;
-  min-width: 150px;
+  border-radius: 6px;
+  padding: 5px 10px;
+  min-width: 120px;
   flex: 1;
 }
 
 @media (min-width: 640px) {
   .search-bar {
     display: flex;
-    min-width: 180px;
+    min-width: 150px;
   }
 }
 
 @media (min-width: 1024px) {
   .search-bar {
-    min-width: 200px;
+    min-width: 180px;
+    border-radius: 8px;
   }
 }
 
@@ -153,7 +161,7 @@ body {
   border: none;
   background: transparent;
   outline: none;
-  font-size: 12px;
+  font-size: 11px;
   color: #6b7280;
   font-family: 'DM Sans', sans-serif;
   width: 100%;
@@ -161,12 +169,12 @@ body {
 
 @media (min-width: 768px) {
   .search-bar input {
-    font-size: 13px;
+    font-size: 12px;
   }
 }
 
 .search-icon {
-  font-size: 12px;
+  font-size: 11px;
   color: #9ca3af;
   flex-shrink: 0;
 }
@@ -174,35 +182,72 @@ body {
 .topnav-right {
   display: flex;
   align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
+  gap: 8px;
+}
+
+@media (min-width: 640px) {
+  .topnav-right {
+    gap: 10px;
+  }
 }
 
 .nav-link {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 500;
   color: #6b7280;
   text-decoration: none;
   transition: color 0.2s;
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .nav-link {
+    display: inline-block;
+    font-size: 13px;
+  }
 }
 
 .nav-link:hover,
 .nav-link.active {
-  color: #2563eb; 
+  color: #2563eb;
 }
 
 .icon-btn {
-  font-size: 16px;
+  font-size: 14px;
   cursor: pointer;
   color: #6b7280;
+  background: none;
+  border: none;
+  padding: 4px;
+  transition: color 0.2s;
+  flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+  .icon-btn {
+    font-size: 16px;
+    padding: 5px;
+  }
+}
+
+.icon-btn:hover {
+  color: #2563eb;
 }
 
 .avatar img {
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid #e5e7eb;
+  flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+  .avatar img {
+    width: 34px;
+    height: 34px;
+  }
 }
 
 /* ====== Layout ====== */
@@ -212,30 +257,52 @@ body {
   min-height: 0;
   overflow: hidden;
   height: 100%;
+  width: 100%;
+}
+
+/* ====== Sidebar ====== */
+.sidebar {
+  display: none;
+  background: #fff;
+  border-right: 1px solid #e5e7eb;
+  padding: 12px 8px;
+  overflow-y: auto;
+  flex-shrink: 0;
+  width: 250px;
+  min-height: 0;
+}
+
+@media (min-width: 1024px) {
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    padding: 14px 10px;
+  }
 }
 
 /* ====== Content ====== */
 .content {
   flex: 1;
-  padding: 16px;
+  padding: 14px;
   overflow-y: auto;
   background: #f9fafb;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
+  width: 100%;
 }
 
 @media (min-width: 640px) {
   .content {
-    padding: 20px;
-    gap: 18px;
+    padding: 16px;
+    gap: 16px;
   }
 }
 
 @media (min-width: 1024px) {
   .content {
-    padding: 28px;
-    gap: 22px;
+    padding: 24px;
+    gap: 20px;
   }
 }
 
@@ -244,35 +311,35 @@ body {
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
-  flex-direction: column;
+  flex-wrap: wrap;
 }
 
 @media (min-width: 768px) {
   .content-header {
-    flex-direction: row;
-    align-items: center;
+    flex-wrap: nowrap;
+    gap: 14px;
   }
 }
 
 .greeting {
-  font-size: clamp(20px, 5vw, 26px);
+  font-size: clamp(18px, 5vw, 24px);
   font-weight: 700;
   color: #111827;
 }
 
 .subgreeting {
-  font-size: clamp(12px, 2vw, 13.5px);
+  font-size: clamp(11px, 2vw, 13px);
   color: #6b7280;
-  margin-top: 3px;
+  margin-top: 2px;
 }
 
 .create-btn {
   background: #245FEB;
   color: #fff;
   border: none;
-  border-radius: 8px;
-  padding: 8px 14px;
-  font-size: 13px;
+  border-radius: 7px;
+  padding: 8px 12px;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
@@ -280,16 +347,25 @@ body {
   transition: background 0.2s;
   display: flex;
   align-items: center;
-  gap: 6px;
-  width: 100%;
   justify-content: center;
+  gap: 5px;
+  width: 100%;
+  flex: 0 0 100%;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 640px) {
   .create-btn {
     width: auto;
-    padding: 10px 18px;
-    font-size: 14px;
+    padding: 9px 14px;
+    font-size: 12px;
+    flex: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .create-btn {
+    padding: 10px 16px;
+    font-size: 13px;
   }
 }
 
