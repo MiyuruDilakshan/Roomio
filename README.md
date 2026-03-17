@@ -229,20 +229,6 @@ npm install
 # The client will automatically configure axios to use this API
 ```
 
-### **Step 5: Seed Database (Optional)**
-
-To populate the database with sample furniture data:
-
-```bash
-# In server directory
-cd server
-node seedFurniture.js
-```
-
-This will add 12 sample furniture items across multiple categories.
-
----
-
 ## ▶️ Running the Project
 
 ### **Start in Development Mode**

@@ -26,14 +26,27 @@
 
 /* Main container */
 .navbar-container{
-  width: 1280px;
+  max-width: 1280px;
   margin: auto;
+  width: 100%;
 
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
 
-  padding: 0 32px;
+  padding: 0 16px;
+}
+
+@media (min-width: 640px) {
+  .navbar-container {
+    padding: 0 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .navbar-container {
+    padding: 0 32px;
+  }
 }
 
 /* Logo */
@@ -44,26 +57,39 @@
 .logo{
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .logo-icon{
-  width:24px;
-  height:24px;
+  width: 20px;
+  height: 20px;
   object-fit:contain;
 }
 
 .logo-icon-box{
-  width:34px;
-  height:34px;
+  width: 28px;
+  height: 28px;
 
   background: transparent;
-  border-radius:10px;
+  border-radius: 8px;
 
   display:flex;
   align-items:center;
   justify-content:center;
+}
+
+@media (min-width: 768px) {
+  .logo-icon {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .logo-icon-box {
+    width: 34px;
+    height: 34px;
+  }
 }
 
 .logo:hover .logo-icon{
@@ -73,27 +99,49 @@
 .logo-text{
   font-family: "Inter";
   font-weight: 700;
-  font-size: 20px;
-  line-height: 28px;
+  font-size: 16px;
+  line-height: 24px;
   letter-spacing: -0.5px;
   color: #0F172A;
+  white-space: nowrap;
+}
+
+@media (min-width: 768px) {
+  .logo-text {
+    font-size: 20px;
+    line-height: 28px;
+  }
 }
 
 /* Navigation links */
 .nav-links{
-  display:flex;
+  display: none;
   justify-content:center;
-  gap:32px;
+  gap: 20px;
+}
+
+@media (min-width: 1024px) {
+  .nav-links {
+    display: flex;
+    gap: 32px;
+  }
 }
 
 .nav-links a{
   font-family:"Inter";
-  font-size:14px;
+  font-size: 13px;
   font-weight:500;
   color:#0F172A;
   text-decoration:none;
   cursor:pointer;
   transition: color 0.2s ease;
+  white-space: nowrap;
+}
+
+@media (min-width: 1280px) {
+  .nav-links a {
+    font-size: 14px;
+  }
 }
 
 .nav-links .nav-link.active{
@@ -105,32 +153,53 @@
 .nav-actions{
   display:flex;
   align-items:center;
-  gap:20px;
+  gap: 12px;
   justify-content:flex-end;
+  flex-wrap: wrap;
+}
+
+@media (min-width: 768px) {
+  .nav-actions {
+    gap: 16px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .nav-actions {
+    gap: 20px;
+  }
 }
 
 .login{
   font-family:"Inter";
-  font-size:14px;
+  font-size: 12px;
   font-weight:600;
   color:#334155;
   cursor:pointer;
   text-decoration:none;
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .login {
+    display: block;
+    font-size: 14px;
+  }
 }
 
 /* Button */
 .get-started{
-  padding:8px 18px;
-  height:36px;
+  padding: 6px 12px;
+  height: 32px;
 
   background:#245FEB;
   color:#ffffff;
 
   border:none;
-  border-radius:8px;
+  border-radius: 6px;
 
   font-family:"Inter";
-  font-size:14px;
+  font-size: 12px;
   font-weight:600;
 
   cursor:pointer;
@@ -138,10 +207,30 @@
   box-shadow:
     0px 4px 6px rgba(36,95,235,0.20),
     0px 10px 15px rgba(36,95,235,0.20);
+  
+  white-space: nowrap;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+@media (min-width: 640px) {
+  .get-started {
+    padding: 7px 14px;
+    height: 34px;
+    font-size: 13px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .get-started {
+    padding: 8px 18px;
+    height: 36px;
+    font-size: 14px;
+  }
 }
 
 .get-started:hover{
   opacity:0.9;
+  transform: translateY(-1px);
 }
 
 .nav-links a:hover{
