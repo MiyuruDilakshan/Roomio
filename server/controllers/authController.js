@@ -42,9 +42,16 @@ exports.register = async (req, res) => {
     // Create token
     const token = generateToken(user._id, user.role);
 
+    // Set HTTP-only cookie
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
     res.status(201).json({
       success: true,
-      token,
       user: {
         id: user._id,
         name: user.name,
@@ -74,8 +81,18 @@ exports.login = async (req, res) => {
       });
     }
 
-    // Check for user
-    const user = await User.findOne({ email }).select("+password");
+    // Check for user - wrapped in try-catch for database errors
+    let user;
+    try {
+      user = await User.findOne({ email }).select("+password");
+    } catch (dbErr) {
+      console.error("Database error during user lookup:", dbErr.message);
+      return res.status(503).json({
+        success: false,
+        message: "Database service unavailable. Please try again later.",
+      });
+    }
+
     if (!user) {
       return res.status(401).json({
         success: false,
@@ -118,9 +135,17 @@ exports.login = async (req, res) => {
     // Create token
     const token = generateToken(user._id, user.role);
 
+    // Set HTTP-only cookie
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    console.log(`Login successful for user: ${email}`);
     res.status(200).json({
       success: true,
-      token,
       user: {
         id: user._id,
         name: user.name,
@@ -130,9 +155,10 @@ exports.login = async (req, res) => {
       },
     });
   } catch (error) {
+    console.error("Login error:", error.message);
     res.status(500).json({
       success: false,
-      message: error.message,
+      message: "An unexpected error occurred during login",
     });
   }
 };
@@ -140,15 +166,52 @@ exports.login = async (req, res) => {
 // Get current user
 exports.getMe = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
+    // If no user in request, return not authenticated
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: "Not authenticated",
+        user: null,
+      });
+    }
+
+    // Fetch user from database
+    let user;
+    try {
+      user = await User.findById(req.user.id);
+    } catch (dbErr) {
+      console.error("Database error fetching user:", dbErr.message);
+      return res.status(503).json({
+        success: false,
+        message: "Database service unavailable",
+        user: null,
+      });
+    }
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "User not found",
+        user: null,
+      });
+    }
+
     res.status(200).json({
       success: true,
-      user,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        avatar: user.avatar,
+      },
     });
   } catch (error) {
+    console.error("GetMe error:", error.message);
     res.status(500).json({
       success: false,
-      message: error.message,
+      message: "An unexpected error occurred",
+      user: null,
     });
   }
 };
@@ -209,6 +272,28 @@ exports.updateProfile = async (req, res) => {
         role: user.role,
         avatar: user.avatar,
       },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// Logout
+exports.logout = async (req, res) => {
+  try {
+    // Clear the HTTP-only cookie
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Logged out successfully",
     });
   } catch (error) {
     res.status(500).json({
