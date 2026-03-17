@@ -1,47 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import "../styles/Navbar.css";
+import defaultAvatar from "../assets/avatar1.jpg";
 const logoSrc = "/Logo 1.png";
 
 function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const lastScrollY = useRef(0);
   const [isHidden, setIsHidden] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [user, setUser] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-  useEffect(() => {
-    const syncUser = () => {
-      const userData = localStorage.getItem("user");
-      if (userData) {
-        setUser(JSON.parse(userData));
-      } else {
-        setUser(null);
-      }
-    };
-
-    syncUser();
-
-    const handleProfileUpdate = () => {
-      syncUser();
-    };
-
-    const handleStorage = (event) => {
-      if (!event.key || event.key === "user") {
-        syncUser();
-      }
-    };
-
-    window.addEventListener("profileUpdated", handleProfileUpdate);
-    window.addEventListener("storage", handleStorage);
-
-    return () => {
-      window.removeEventListener("profileUpdated", handleProfileUpdate);
-      window.removeEventListener("storage", handleStorage);
-    };
-  }, [location]);
 
   const isActive = (path) => {
     return location.pathname === path ? "active" : "";
@@ -63,9 +34,7 @@ function Navbar() {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setUser(null);
+    logout();
     setIsDropdownOpen(false);
     navigate("/");
   };
@@ -134,7 +103,7 @@ function Navbar() {
               </button>
               <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                 <img 
-                  src={user.avatar || "https://i.pravatar.cc/68?img=1"} 
+                  src="https://www.w3schools.com/howto/img_avatar.png" 
                   alt={user.name} 
                   style={{ width: "32px", height: "32px", borderRadius: "50%", objectFit: "cover" }}
                 />

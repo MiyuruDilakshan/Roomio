@@ -1,82 +1,8 @@
-import { useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import LoggedInNavbar from "../../components/LoggedInNavbar";
 import CustomerSidebar from "../../components/CustomerSidebar";
+import { furnitureAPI } from "../../services/furnitureAPI";
 import "../../styles/customer/Library.css";
-import nordicSofaImg from "../../assets/Library/nordic-sofa.png";
-import scandiTableImg from "../../assets/Library/scandi-table.png";
-import industrialChairImg from "../../assets/Library/industrial-chair.png";
-import minimalistBedImg from "../../assets/Library/minimalist-bed.png";
-import globoLightImg from "../../assets/Library/globo-light.png";
-import modularBookshelfImg from "../../assets/Library/modular-bookshelf.png";
-
-const products = [
-  {
-    id: 1,
-    title: "Nordic Velvet Sofa",
-    price: 1299,
-    dimensions: "220W x 95D x 85H cm",
-    rating: 4,
-    reviews: 48,
-    badge: "NEW",
-    saved: false,
-    img: nordicSofaImg,
-  },
-  {
-    id: 2,
-    title: "Scandi Oak Table",
-    price: 850,
-    dimensions: "180W x 90D x 75H cm",
-    rating: 5,
-    reviews: 124,
-    badge: null,
-    saved: true,
-    img: scandiTableImg,
-  },
-  {
-    id: 3,
-    title: "Industrial Armchair",
-    price: 420,
-    dimensions: "75W x 80D x 90H cm",
-    rating: 4,
-    reviews: 29,
-    badge: null,
-    saved: false,
-    img: industrialChairImg,
-  },
-  {
-    id: 4,
-    title: "Minimalist Bed Frame",
-    price: 1850,
-    dimensions: "200W x 215D x 110H cm",
-    rating: 4,
-    reviews: 15,
-    badge: null,
-    saved: false,
-    img: minimalistBedImg,
-  },
-  {
-    id: 5,
-    title: "Globo Pendant Light",
-    price: 210,
-    dimensions: "40W x 40D x 60H cm",
-    rating: 3,
-    reviews: 72,
-    badge: null,
-    saved: false,
-    img: globoLightImg,
-  },
-  {
-    id: 6,
-    title: "Modular Bookshelf",
-    price: 680,
-    dimensions: "120W x 35D x 180H cm",
-    rating: 5,
-    reviews: 56,
-    badge: null,
-    saved: false,
-    img: modularBookshelfImg,
-  },
-];
 
 const categories = ["All Items", "Sofas", "Tables", "Chairs", "Beds", "Storage", "Lighting", "Saved Items"];
 const colors = ["#1a1a2e", "#ffffff", "#b45309", "#94a3b8", "#2563eb"];
@@ -94,10 +20,29 @@ function StarRating({ rating }) {
 }
 
 export default function Library() {
-
-
   const [activeCategory, setActiveCategory] = useState("All Items");
-  const [savedItems, setSavedItems] = useState({ 2: true });
+  const [savedItems, setSavedItems] = useState({});
+  const [products, setProducts] = useState([]);
+  const hasLoadedRef = useRef(false);
+
+  // Load furniture from database
+  useEffect(() => {
+    if (hasLoadedRef.current) return;
+    hasLoadedRef.current = true;
+
+    const loadFurniture = async () => {
+      try {
+        const response = await furnitureAPI.getFurnitureItems(activeCategory, null);
+        setProducts(response.items || []);
+      } catch (error) {
+        console.error("Error loading furniture:", error);
+        setProducts([]);
+      }
+    };
+
+    loadFurniture();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [selectedColors, setSelectedColors] = useState([4]);
   const [selectedMaterials, setSelectedMaterials] = useState([1]);
   const [selectedStyle, setSelectedStyle] = useState(0);
@@ -229,23 +174,31 @@ export default function Library() {
               <div className="lib-products">
                 <div className="lib-grid">
                   {products.map((product) => (
-                    <div className="lib-card" key={product.id}>
+                    <div className="lib-card" key={product._id || product.id}>
                       <div className="lib-card-thumb">
-                        <img src={product.img} alt={product.title} />
+                        <img 
+                          src={product.image || product.img || '/images/placeholder.png'} 
+                          alt={product.title || product.name}
+                          onError={(e) => e.target.src = '/images/placeholder.png'}
+                        />
                         {product.badge && <span className="lib-badge">{product.badge}</span>}
                         <button
-                          className={`lib-save-btn ${savedItems[product.id] ? "lib-save-btn--saved" : ""}`}
-                          onClick={() => toggleSave(product.id)}
+                          className={`lib-save-btn ${savedItems[product._id || product.id] ? "lib-save-btn--saved" : ""}`}
+                          onClick={() => toggleSave(product._id || product.id)}
                         >
-                          {savedItems[product.id] ? "♥" : "♡"}
+                          {savedItems[product._id || product.id] ? "♥" : "♡"}
                         </button>
                       </div>
                       <div className="lib-card-body">
                         <div className="lib-card-header">
-                          <span className="lib-card-title">{product.title}</span>
-                          <span className="lib-card-price">${product.price.toLocaleString()}</span>
+                          <span className="lib-card-title">{product.title || product.name}</span>
+                          <span className="lib-card-price">${(product.price || 0).toLocaleString()}</span>
                         </div>
-                        <div className="lib-card-dims">{product.dimensions}</div>
+                        <div className="lib-card-dims">
+                          {typeof product.dimensions === 'object' && product.dimensions?.width
+                            ? `${product.dimensions.width} × ${product.dimensions.depth} × ${product.dimensions.height} ${product.dimensions.unit}`
+                            : product.dimensions || 'N/A'}
+                        </div>
                         <div className="lib-card-rating">
                           <StarRating rating={product.rating} />
                           <span className="lib-card-reviews">({product.reviews})</span>

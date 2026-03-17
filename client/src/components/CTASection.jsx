@@ -28,7 +28,7 @@ function CTASection() {
         </h2>
 
         <p className="cta-text">
-          Join thousands of others creating beautiful rooms with RoomViz Pro.
+          Join thousands of others creating beautiful rooms with Roomio.
           No credit card required to start.
         </p>
 

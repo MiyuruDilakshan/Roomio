@@ -1,11 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import axios from 'axios';
+import { AuthContext } from '../../context/AuthContext';
 import pencilButton from '../../assets/pencilButton.png';
+import defaultAvatar from '../../assets/avatar1.jpg';
 import { Bell, CheckCircle, CreditCard } from 'lucide-react';
 import Sidebar from '../../components/DesignerSidebar';
 import LoggedInNavbar from '../../components/LoggedInNavbar';
 
 const Settings = () => {
+  const { user, updateUser } = useContext(AuthContext);
   const [notifications, setNotifications] = useState({
     projectUpdates: true,
     assetReleases: true,
@@ -15,7 +18,7 @@ const Settings = () => {
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
-    avatar: 'https://i.pravatar.cc/90?img=1'
+    avatar: defaultAvatar
   });
 
   const avatarInputRef = useRef(null);
@@ -41,11 +44,11 @@ const Settings = () => {
         });
 
         if (response.data.success) {
-          const user = response.data.user;
+          const userData = response.data.user;
           setFormData({
-            fullName: user.name || '',
-            email: user.email || '',
-            avatar: user.avatar || 'https://i.pravatar.cc/90?img=1'
+            fullName: userData.name || '',
+            email: userData.email || '',
+            avatar: userData.avatar || defaultAvatar
           });
         }
       } catch (error) {
@@ -144,13 +147,15 @@ const Settings = () => {
       );
 
       if (response.data.success) {
-        const updatedUser =
-          response.data.user || JSON.parse(localStorage.getItem('user') || '{}');
+        const updatedUser = response.data.user;
+        // Update AuthContext with new user data
+        updateUser(updatedUser);
+        // Also persist to localStorage for fallback
         localStorage.setItem('user', JSON.stringify(updatedUser));
         setFormData({
           fullName: updatedUser.name || '',
           email: updatedUser.email || '',
-          avatar: updatedUser.avatar || 'https://i.pravatar.cc/90?img=1'
+          avatar: updatedUser.avatar || defaultAvatar
         });
 
         // Save notifications to localStorage
@@ -200,7 +205,7 @@ const Settings = () => {
         setFormData({
           fullName: user.name || '',
           email: user.email || '',
-          avatar: user.avatar || 'https://i.pravatar.cc/90?img=1'
+          avatar: user.avatar || defaultAvatar
         });
       }
     } catch (error) {

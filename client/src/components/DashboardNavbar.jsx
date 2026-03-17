@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "../styles/DashboardNavbar.css";
 import logoIcon from "../assets/Icon.png";
+import defaultAvatar from "../assets/avatar1.jpg";
 
 function DashboardNavbar() {
   const location = useLocation();
@@ -118,7 +119,7 @@ function DashboardNavbar() {
           <div className="dashboard-icon-btn">🔔</div>
           <div className="dashboard-avatar">
             <img
-              src={user?.avatar || "https://i.pravatar.cc/36?img=12"}
+              src={user?.avatar || defaultAvatar}
               alt={user?.name || "avatar"}
             />
           </div>

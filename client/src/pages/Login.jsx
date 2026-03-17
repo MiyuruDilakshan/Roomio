@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useAuth } from "../context/AuthContext";
 
 // ─── Body reset ───────────────────────────────────────────────────────────────
 function useBodyReset() {
@@ -80,6 +81,7 @@ function InputField({ icon, placeholder, type = "text", value, onChange, rightEl
 export default function Login() {
   useBodyReset();
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [tab, setTab]       = useState("customer");
   const [showPw, setShowPw] = useState(false);
   const [keep, setKeep]     = useState(false);
@@ -107,14 +109,17 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const response = await axios.post("http://localhost:5000/api/auth/login", {
+      const response = await axios.post("/api/auth/login", {
         email,
         password: pw,
+      }, {
+        withCredentials: true,
       });
 
       if (response.data.success) {
-        localStorage.setItem("token", response.data.token);
-        localStorage.setItem("user", JSON.stringify(response.data.user));
+        // Backend sets HTTP-only cookie automatically
+        // Just set the user in auth context
+        login(response.data.user);
         
         if (response.data.user.role === "designer") {
           navigate("/designer/dashboard");

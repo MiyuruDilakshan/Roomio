@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import LoggedInNavbar from "../../components/LoggedInNavbar";
 import CustomerSidebar from "../../components/CustomerSidebar";
+import defaultAvatar from "../../assets/avatar1.jpg";
 import "../../styles/customer/Settings.css";
 
 export default function Settings() {
@@ -37,7 +38,7 @@ export default function Settings() {
           const user = response.data.user;
           setFullName(user.name || "");
           setEmail(user.email || "");
-          setAvatar(user.avatar || "https://i.pravatar.cc/90?img=12");
+          setAvatar(user.avatar || defaultAvatar);
         }
       } catch (error) {
         console.error("Error fetching user data:", error);

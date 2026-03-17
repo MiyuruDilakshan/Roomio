@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Navigate, useLocation } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 function ProtectedRoute({ children, requiredRole }) {
   const location = useLocation();
-  const token = localStorage.getItem("token");
-  const user = localStorage.getItem("user");
+  const { user, isAuthenticated, isLoading } = useAuth();
   const [accessDenied, setAccessDenied] = useState(false);
   const [deniedRole, setDeniedRole] = useState(null);
 
@@ -12,14 +12,13 @@ function ProtectedRoute({ children, requiredRole }) {
     setAccessDenied(false);
     setDeniedRole(null);
     
-    if (token && user && requiredRole) {
-      const userData = JSON.parse(user);
-      if (userData.role !== requiredRole) {
+    if (isAuthenticated && user && requiredRole) {
+      if (user.role !== requiredRole) {
         setAccessDenied(true);
-        setDeniedRole(userData.role);
+        setDeniedRole(user.role);
         
         const timer = setTimeout(() => {
-          if (userData.role === "designer") {
+          if (user.role === "designer") {
             window.location.href = "/designer/dashboard";
           } else {
             window.location.href = "/customer/dashboard";
@@ -29,9 +28,49 @@ function ProtectedRoute({ children, requiredRole }) {
         return () => clearTimeout(timer);
       }
     }
-  }, [token, user, requiredRole, location]);
+  }, [isAuthenticated, user, requiredRole, location]);
 
-  if (!token || !user) {
+  // Show loading screen while auth is initializing
+  if (isLoading) {
+    return (
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        minHeight: "100vh",
+        backgroundColor: "#f8fafc",
+        fontFamily: "'Inter', sans-serif",
+      }}>
+        <div style={{
+          textAlign: "center",
+        }}>
+          <div style={{
+            width: "48px",
+            height: "48px",
+            border: "3px solid #e2e8f0",
+            borderTop: "3px solid #4f46e5",
+            borderRadius: "50%",
+            animation: "spin 1s linear infinite",
+            margin: "0 auto 20px",
+          }}></div>
+          <p style={{
+            color: "#64748b",
+            fontSize: "14px",
+            margin: 0,
+          }}>
+            Loading...
+          </p>
+          <style>{`
+            @keyframes spin {
+              to { transform: rotate(360deg); }
+            }
+          `}</style>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated || !user) {
     return <Navigate to="/login" replace />;
   }
 

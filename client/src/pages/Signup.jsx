@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useAuth } from "../context/AuthContext";
 
 // ─── Body reset ───────────────────────────────────────────────────────────────
 function useBodyReset() {
@@ -85,6 +86,7 @@ function InputField({ icon, placeholder, type = "text", value, onChange, rightEl
 export default function Signup() {
   useBodyReset();
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [showPw, setShowPw]   = useState(false);
   const [agreed, setAgreed]   = useState(false);
   const [name, setName]       = useState("");
@@ -117,15 +119,18 @@ export default function Signup() {
     setLoading(true);
 
     try {
-      const response = await axios.post("http://localhost:5000/api/auth/register", {
+      const response = await axios.post("/api/auth/register", {
         name,
         email,
         password: pw,
+      }, {
+        withCredentials: true,
       });
 
       if (response.data.success) {
-        localStorage.setItem("token", response.data.token);
-        localStorage.setItem("user", JSON.stringify(response.data.user));
+        // Backend sets HTTP-only cookie automatically
+        // Just set the user in auth context
+        login(response.data.user);
         navigate("/customer/dashboard");
       }
     } catch (err) {

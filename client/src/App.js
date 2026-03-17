@@ -1,6 +1,8 @@
 import React, { useEffect, useLayoutEffect } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { WizardProvider } from "./context/WizardContext";
+import { AuthProvider } from "./context/AuthContext";
 
 // Pages - Public
 import LandingPage from "./pages/LandingPage";
@@ -27,6 +29,10 @@ import DesignerLibrary from "./pages/designer/library";
 import DesignerInspiration from "./pages/designer/inspiration";
 import DesignerSettings from "./pages/designer/settings";
 import DesignerClients from "./pages/designer/clients";
+
+// Pages - Room Designer
+import RoomWizardPage from "./pages/RoomWizardPage";
+import RoomDesignerPage from "./pages/RoomDesignerPage";
 
 function injectStyles() {
   if (document.getElementById("roomio-transitions")) return;
@@ -74,6 +80,10 @@ function AppRoutes() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
        
+        {/* Room Designer Routes */}
+        <Route path="/room-wizard" element={<ProtectedRoute><RoomWizardPage /></ProtectedRoute>} />
+        <Route path="/room-editor" element={<ProtectedRoute><RoomDesignerPage /></ProtectedRoute>} />
+
         {/* Customer Routes */}
         <Route path="/customer" element={<Navigate to="/customer/dashboard" replace />} />
         <Route path="/customer/dashboard" element={<ProtectedRoute requiredRole="customer"><Dashboard /></ProtectedRoute>} />
@@ -99,7 +109,13 @@ function AppRoutes() {
 }
 
 function App() {
-  return <AppRoutes />;
+  return (
+    <AuthProvider>
+      <WizardProvider>
+        <AppRoutes />
+      </WizardProvider>
+    </AuthProvider>
+  );
 }
 
 export default App;

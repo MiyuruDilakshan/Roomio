@@ -1,31 +1,66 @@
-import React, { useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../context/AuthContext';
 import LoggedInNavbar from '../../components/LoggedInNavbar';
 import DesignerSidebar from '../../components/DesignerSidebar';
 import { Plus, Grid3x3, Users, DollarSign, Clock, MoreVertical, Upload, Sparkles } from 'lucide-react';
+import { designAPI } from '../../services/designAPI';
 
 import '../../styles/designer/Dashboard.css';
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
   const [userName, setUserName] = useState("Designer");
+  const [designs, setDesigns] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState(null);
+  const hasLoadedRef = useRef(false);
 
   useEffect(() => {
-    const user = localStorage.getItem("user");
-    if (user) {
-      try {
-        const userData = JSON.parse(user);
-        setUserName(userData.name || "Designer");
-      } catch (e) {
-        setUserName("Designer");
-      }
+    if (user?.name) {
+      setUserName(user.name);
     }
-  }, []);
+  }, [user]);
 
-  const stats = [
+  useEffect(() => {
+    if (hasLoadedRef.current) return;
+    hasLoadedRef.current = true;
+
+    const loadDesigns = async () => {
+      try {
+        if (user?.id) {
+          const response = await designAPI.getUserDesigns(user.id);
+          const userDesigns = response.designs || [];
+          setDesigns(userDesigns);
+
+          // Calculate stats from designs
+          setStats({
+            totalProjects: userDesigns.length,
+            activeClients: new Set(userDesigns.map(d => d.clientName || "").filter(Boolean)).size,
+            pendingTasks: userDesigns.filter(d => d.status === 'draft').length,
+          });
+        }
+      } catch (error) {
+        console.error("Error loading designs:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadDesigns();
+  }, [user]);
+
+  const handleNewProject = () => {
+    navigate("/room-wizard", { state: { from: "/designer/dashboard" } });
+  };
+
+  const statsCards = [
     {
       icon: Grid3x3,
       label: 'TOTAL PROJECTS',
-      value: '12',
-      change: '+4 this month',
+      value: stats?.totalProjects || '0',
+      change: `${designs.length} total`,
       changeColor: 'bg-green-100 text-green-700',
       iconBg: 'bg-blue-50',
       iconColor: 'text-blue-600'
@@ -33,17 +68,17 @@ const Dashboard = () => {
     {
       icon: Users,
       label: 'ACTIVE CLIENTS',
-      value: '4',
-      change: '+2 active',
+      value: stats?.activeClients || '0',
+      change: 'Client projects',
       changeColor: 'bg-green-100 text-green-700',
       iconBg: 'bg-green-50',
       iconColor: 'text-green-600'
     },
     {
       icon: DollarSign,
-      label: 'MONTHLY REVENUE',
-      value: '$8,500',
-      change: '+15% vs LY',
+      label: 'DESIGNS COMPLETED',
+      value: (designs.filter(d => d.status === 'completed').length),
+      change: 'Finished projects',
       changeColor: 'bg-green-100 text-green-700',
       iconBg: 'bg-purple-50',
       iconColor: 'text-purple-600'
@@ -51,43 +86,23 @@ const Dashboard = () => {
     {
       icon: Clock,
       label: 'PENDING TASKS',
-      value: '1',
-      change: 'On Schedule',
+      value: stats?.pendingTasks || '0',
+      change: 'In Draft',
       changeColor: 'bg-blue-100 text-blue-700',
       iconBg: 'bg-orange-50',
       iconColor: 'text-orange-600'
     }
   ];
 
-  const recentActivity = [
-    {
-      id: 1,
-      icon: '🏠',
-      name: 'Modern Kitchen Remodel',
-      client: 'Sarah Jenkins',
-      status: 'In Progress',
-      statusColor: 'bg-blue-100 text-blue-700',
-      date: 'Oct 24, 2023'
-    },
-    {
-      id: 2,
-      icon: '🏢',
-      name: 'Zen Office Space',
-      client: 'TechFlow Inc.',
-      status: 'Completed',
-      statusColor: 'bg-green-100 text-green-700',
-      date: 'Oct 21, 2023'
-    },
-    {
-      id: 3,
-      icon: '🏠',
-      name: 'Luxury Suite V2',
-      client: 'Michael Ross',
-      status: 'Pending Approval',
-      statusColor: 'bg-yellow-100 text-yellow-700',
-      date: 'Oct 18, 2023'
-    }
-  ];
+  const recentActivity = designs.slice(0, 5).map((design, index) => ({
+    id: index + 1,
+    icon: '🏠',
+    name: design.projectName || 'Untitled Design',
+    client: design.clientName || 'No client',
+    status: design.status === 'draft' ? 'Draft' : design.status === 'completed' ? 'Completed' : 'In Progress',
+    statusColor: design.status === 'draft' ? 'bg-yellow-100 text-yellow-700' : design.status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700',
+    date: new Date(design.updatedAt || design.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  }));
 
   return (
     <>
@@ -108,7 +123,7 @@ const Dashboard = () => {
                       <h1 className="text-3xl font-bold text-gray-900 mb-2">Manage Dashboard</h1>
                       <p className="text-gray-600">Welcome back, {userName}. Ready for today's customers?</p>
                     </div>
-                    <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-medium text-sm flex items-center gap-2 transition-colors">
+                    <button onClick={handleNewProject} className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-medium text-sm flex items-center gap-2 transition-colors">
                       <Plus size={18} />
                       New Project
                     </button>
@@ -116,7 +131,7 @@ const Dashboard = () => {
 
                   {/* Stats Grid */}
                   <div className="grid grid-cols-4 gap-6 mb-8">
-                    {stats.map((stat, index) => {
+                    {statsCards.map((stat, index) => {
                       const Icon = stat.icon;
                       return (
                         <div key={index} className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow">
